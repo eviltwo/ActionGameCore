@@ -8,26 +8,29 @@ namespace CharacterControls.Inputs
     public class CharacterMoveInput : MonoBehaviour
     {
         [SerializeField]
-        public InputActionAsset InputActionAsset;
+        private InputActionAsset _inputActionAsset;
 
         public IMoveController MoveController { get; set; }
 
+        private InputAction _moveAction;
+
         private void Start()
         {
+            _inputActionAsset.Enable();
+            var map = _inputActionAsset.FindActionMap("Player");
+            _moveAction = map.FindAction("Move");
+
             MoveController = GetComponent<IMoveController>();
         }
 
         private void Update()
         {
-            if (InputActionAsset == null || MoveController == null)
+            if (_inputActionAsset == null || MoveController == null)
             {
                 return;
             }
 
-            InputActionAsset.Enable();
-            var map = InputActionAsset.FindActionMap("Player");
-            var move = map.FindAction("Move");
-            var value = move.ReadValue<Vector2>();
+            var value = _moveAction.ReadValue<Vector2>();
             MoveController.SetMoveInput(value);
         }
     }

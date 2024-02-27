@@ -241,7 +241,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 9f2cd23bb5d605c4aaeaa40780daac0c, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  InputActionAsset: {fileID: -944628639613478452, guid: ca9f5fa95ffab41fb9a615ab714db018, type: 3}
+  _inputActionAsset: {fileID: -944628639613478452, guid: ca9f5fa95ffab41fb9a615ab714db018, type: 3}
 --- !u!1 &312162723
 GameObject:
   m_ObjectHideFlags: 0
@@ -867,6 +867,7 @@ MonoBehaviour:
   Sensitivity: 0.1
   AngleMin: -90
   AngleMax: 90
+  _lockAndHideCursor: 1
 --- !u!1 &970461546
 GameObject:
   m_ObjectHideFlags: 0
