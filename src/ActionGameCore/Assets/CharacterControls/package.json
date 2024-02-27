@@ -1,0 +1,19 @@
+{
+    "name": "com.eviltwo.character-controls",
+    "displayName": "Character Controls",
+    "version": "0.5.0",
+    "unity": "2022.3",
+    "description": "Base movements for character of 3D action game.",
+    "author": {
+        "name": "DAIKI(eviltwo)",
+        "url": "https://github.com/eviltwo"
+    },
+
+    "keywords": [
+        "Character",
+        "Action"
+    ],
+
+    "dependencies": {
+    }
+}

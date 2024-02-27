@@ -1,0 +1,23 @@
+{
+    "name": "CharacterControls.Inputs",
+    "rootNamespace": "",
+    "references": [
+        "GUID:75469ad4d38634e559750d17036d5f7c",
+        "GUID:9cb36de80f6aa0e4f925e2361fb85950"
+    ],
+    "includePlatforms": [],
+    "excludePlatforms": [],
+    "allowUnsafeCode": false,
+    "overrideReferences": false,
+    "precompiledReferences": [],
+    "autoReferenced": false,
+    "defineConstraints": [],
+    "versionDefines": [
+        {
+            "name": "com.unity.inputsystem",
+            "expression": "",
+            "define": "SUPPORT_INPUTSYSTEM"
+        }
+    ],
+    "noEngineReferences": false
+}
