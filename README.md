@@ -13,11 +13,15 @@
 
 # パッケージインストール (UPM)
 
-CharacterControls（キャラクターの移動）
+[CharacterControls](https://github.com/eviltwo/ActionGameCore/blob/main/src/ActionGameCore/Assets/CharacterControls/CHANGELOG.md)（キャラクターの移動）
 ```
 https://github.com/eviltwo/PasteNext.git?path=src/ActionGameCore/Assets/CharacterControls
 ```
-FPSCameraControls（FPS視点のカメラ）
+[FPSCameraControls](https://github.com/eviltwo/ActionGameCore/blob/main/src/ActionGameCore/Assets/FPSCameraControls/CHANGELOG.md)（FPS視点のカメラ）
 ```
 https://github.com/eviltwo/PasteNext.git?path=src/ActionGameCore/Assets/FPSCameraControls
+```
+TPSCameraControls（TPS視点のカメラ）
+```
+未実装
 ```
