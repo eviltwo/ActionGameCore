@@ -115,7 +115,6 @@ namespace CharacterControls.Movements
                 if (_jumpInput > 0)
                 {
                     Rigidbody.velocity += transform.up * JumpSpeed;
-                    _jumpInput = 0;
                 }
             }
             else
@@ -129,6 +128,8 @@ namespace CharacterControls.Movements
                     Rigidbody.AddForce(addVelocity, ForceMode.Acceleration);
                 }
             }
+
+            _jumpInput = 0;
         }
 
         private Vector3 GetForwardOfMovementSpace()
