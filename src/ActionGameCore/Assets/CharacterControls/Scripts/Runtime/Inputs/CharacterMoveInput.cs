@@ -14,11 +14,14 @@ namespace CharacterControls.Inputs
 
         private InputAction _moveAction;
 
+        private InputAction _jumpAction;
+
         private void Start()
         {
             _inputActionAsset.Enable();
             var map = _inputActionAsset.FindActionMap("Player");
             _moveAction = map.FindAction("Move");
+            _jumpAction = map.FindAction("Jump");
 
             MoveController = GetComponent<IMoveController>();
         }
@@ -30,8 +33,12 @@ namespace CharacterControls.Inputs
                 return;
             }
 
-            var value = _moveAction.ReadValue<Vector2>();
-            MoveController.SetMoveInput(value);
+            MoveController.SetMoveInput(_moveAction.ReadValue<Vector2>());
+
+            if (_jumpAction.WasPressedThisFrame())
+            {
+                MoveController.SetJumpInput(1.0f);
+            }
         }
     }
 }

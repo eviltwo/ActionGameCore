@@ -1,5 +1,9 @@
 # Changelog
 
+## [0.5.2] - 2024-03-03
+### Added
+- Jump and air walk.
+
 ## [0.5.1] - 2024-03-03
 ### Added
 - Fix leg suspension for elevator.

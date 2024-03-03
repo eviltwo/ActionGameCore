@@ -28,7 +28,14 @@ namespace CharacterControls.Movements
         [SerializeField]
         public float WalkSpeed = 5.0f;
 
+        [SerializeField]
+        public float AirWalkSpeed = 2.0f;
+
+        [SerializeField]
+        public float JumpSpeed = 5.0f;
+
         private Vector2 _moveInput;
+        private float _jumpInput;
 
         private void Reset()
         {
@@ -59,6 +66,11 @@ namespace CharacterControls.Movements
             }
 
             _moveInput = moveInput;
+        }
+
+        public void SetJumpInput(float jumpInput)
+        {
+            _jumpInput = jumpInput;
         }
 
         private void FixedUpdate()
@@ -98,6 +110,24 @@ namespace CharacterControls.Movements
                     floorVelocity = hitInfo.rigidbody.velocity - Vector3.Project(hitInfo.rigidbody.velocity, transform.up);
                 }
                 Rigidbody.velocity = targetVelocity + currentVerticalVelocity + floorVelocity;
+
+                // Jump
+                if (_jumpInput > 0)
+                {
+                    Rigidbody.velocity += transform.up * JumpSpeed;
+                    _jumpInput = 0;
+                }
+            }
+            else
+            {
+                if (_moveInput.sqrMagnitude > 0)
+                {
+                    var forward = GetForwardOfMovementSpace();
+                    var right = Vector3.Cross(transform.up, forward);
+                    var targetVelocity = (forward * _moveInput.y + right * _moveInput.x) * AirWalkSpeed;
+                    var addVelocity = targetVelocity - (Rigidbody.velocity - Vector3.Project(Rigidbody.velocity, transform.up));
+                    Rigidbody.AddForce(addVelocity, ForceMode.Acceleration);
+                }
             }
         }
 
