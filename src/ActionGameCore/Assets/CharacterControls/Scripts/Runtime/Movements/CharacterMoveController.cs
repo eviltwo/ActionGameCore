@@ -92,7 +92,12 @@ namespace CharacterControls.Movements
                 var right = Vector3.Cross(transform.up, forward);
                 var targetVelocity = (forward * _moveInput.y + right * _moveInput.x) * WalkSpeed;
                 var currentVerticalVelocity = Vector3.Project(Rigidbody.velocity, transform.up);
-                Rigidbody.velocity = targetVelocity + currentVerticalVelocity;
+                var floorVelocity = Vector3.zero;
+                if (hitInfo.rigidbody != null)
+                {
+                    floorVelocity = hitInfo.rigidbody.velocity - Vector3.Project(hitInfo.rigidbody.velocity, transform.up);
+                }
+                Rigidbody.velocity = targetVelocity + currentVerticalVelocity + floorVelocity;
             }
         }
 
