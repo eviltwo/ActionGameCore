@@ -1268,6 +1268,8 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   _inputActionAsset: {fileID: -944628639613478452, guid: d050cea4568e2be47bc9a4f2c136ccf9, type: 3}
+  _actionMapName: Player
+  _lookActionName: Look
   Target: {fileID: 177208273}
   OffsetY: 1.5
   Sensitivity: 0.1
