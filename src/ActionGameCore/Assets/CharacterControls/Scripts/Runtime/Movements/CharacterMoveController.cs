@@ -76,8 +76,16 @@ namespace CharacterControls.Movements
                 var hitDistance = hitInfo.distance - DistanceMergin;
                 var springRatio = Mathf.Clamp01(hitDistance / StepHeightMax);
                 var springPushForce = (1 - springRatio) * LegStrength;
-                var suspencionForce = Vector3.Project(Rigidbody.velocity, transform.up) * -LegSuspenion;
-                Rigidbody.AddForce(springPushForce * transform.up + suspencionForce, ForceMode.Acceleration);
+                Rigidbody.AddForce(springPushForce * transform.up, ForceMode.Acceleration);
+
+                // Leg suspension
+                var currentVelocity = Rigidbody.velocity;
+                if (hitInfo.rigidbody != null)
+                {
+                    currentVelocity -= hitInfo.rigidbody.velocity;
+                }
+                var suspensionForce = Vector3.Project(currentVelocity, transform.up) * -LegSuspenion;
+                Rigidbody.AddForce(suspensionForce, ForceMode.Acceleration);
 
                 // Move horizontal
                 var forward = GetForwardOfMovementSpace();
