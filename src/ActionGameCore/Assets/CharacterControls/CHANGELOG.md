@@ -1,5 +1,9 @@
 # Changelog
 
+## [0.5.4] - 2024-03-04
+### Fixed
+- Fix error with default input action asset.
+
 ## [0.5.3] - 2024-03-03
 ### Fixed
 - Clear jump input flag every frame.
