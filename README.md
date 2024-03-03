@@ -17,13 +17,13 @@
 
 [CharacterControls](https://github.com/eviltwo/ActionGameCore/blob/main/src/ActionGameCore/Assets/CharacterControls/CHANGELOG.md)（キャラクターの移動）
 ```
-https://github.com/eviltwo/PasteNext.git?path=src/ActionGameCore/Assets/CharacterControls
+https://github.com/eviltwo/ActionGameCore.git?path=src/ActionGameCore/Assets/CharacterControls
 ```
 [FPSCameraControls](https://github.com/eviltwo/ActionGameCore/blob/main/src/ActionGameCore/Assets/FPSCameraControls/CHANGELOG.md)（FPS視点のカメラ）
 ```
-https://github.com/eviltwo/PasteNext.git?path=src/ActionGameCore/Assets/FPSCameraControls
+https://github.com/eviltwo/ActionGameCore.git?path=src/ActionGameCore/Assets/FPSCameraControls
 ```
-TPSCameraControls（TPS視点のカメラ）
+[TPSCameraControls](https://github.com/eviltwo/ActionGameCore/blob/main/src/ActionGameCore/Assets/TPSCameraControls/CHANGELOG.md)（TPS視点のカメラ）
 ```
-未実装
+https://github.com/eviltwo/ActionGameCore.git?path=src/ActionGameCore/Assets/TPSCameraControls
 ```
