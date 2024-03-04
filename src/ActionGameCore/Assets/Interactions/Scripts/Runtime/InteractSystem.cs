@@ -27,7 +27,7 @@ namespace Interactions
         private void Update()
         {
             _findBuffer.Clear();
-            var finders = ObjectFinderManager.GetObjectFinders();
+            var finders = InteractObjectFinderManager.GetObjectFinders();
             var finderCount = finders.Count;
             for (int i = 0; i < finderCount; i++)
             {

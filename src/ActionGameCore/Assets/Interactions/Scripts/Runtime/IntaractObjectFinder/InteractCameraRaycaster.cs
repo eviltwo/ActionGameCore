@@ -4,7 +4,10 @@ using UnityEngine;
 
 namespace Interactions
 {
-    public class CameraRaycaster : ObjectFinder
+    /// <summary>
+    /// Interact object finder for FPS game.
+    /// </summary>
+    public class InteractCameraRaycaster : InteractObjectFinder
     {
         [SerializeField]
         public Camera Camera = null;
