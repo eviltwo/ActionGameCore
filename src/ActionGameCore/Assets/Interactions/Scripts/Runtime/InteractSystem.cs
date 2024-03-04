@@ -1,3 +1,4 @@
+#if SUPPORT_INPUTSYSTEM
 using System;
 using System.Collections.Generic;
 using UnityEngine;
@@ -83,3 +84,4 @@ namespace Interactions
         }
     }
 }
+#endif
