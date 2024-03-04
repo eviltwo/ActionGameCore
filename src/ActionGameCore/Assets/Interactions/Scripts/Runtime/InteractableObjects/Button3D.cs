@@ -4,7 +4,7 @@ using UnityEngine.Events;
 
 namespace Interactions
 {
-    public class Button3D : Selectable3D, IInteractHandler
+    public class Button3D : MonoBehaviour, IInteractHandler
     {
         [SerializeField]
         public string InteractActionNameFilter = "Interact";

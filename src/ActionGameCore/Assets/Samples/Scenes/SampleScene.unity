@@ -1174,7 +1174,6 @@ GameObject:
   - component: {fileID: 963194226}
   - component: {fileID: 963194229}
   - component: {fileID: 963194230}
-  - component: {fileID: 963194231}
   m_Layer: 0
   m_Name: Main Camera
   m_TagString: MainCamera
@@ -1304,22 +1303,6 @@ MonoBehaviour:
     serializedVersion: 2
     m_Bits: 4294967295
   _lockAndHideCursor: 1
---- !u!114 &963194231
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 963194225}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: aa936fe9683fb8e45a5b2a6e525c66a2, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  m_EventMask:
-    serializedVersion: 2
-    m_Bits: 4294967295
-  m_MaxRayIntersections: 0
 --- !u!1 &970461546
 GameObject:
   m_ObjectHideFlags: 0
@@ -1539,6 +1522,7 @@ GameObject:
   serializedVersion: 6
   m_Component:
   - component: {fileID: 1287469869}
+  - component: {fileID: 1287469872}
   - component: {fileID: 1287469871}
   m_Layer: 0
   m_Name: InteractSystem
@@ -1574,12 +1558,29 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 96ecfb51205f9f04d8db82d9419d5e2e, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  Raycaster: {fileID: 963194231}
+  Raycaster: {fileID: 0}
   _interactActionReferences:
   - {fileID: -5543722100508988766, guid: d050cea4568e2be47bc9a4f2c136ccf9, type: 3}
   InteractEvent:
     m_PersistentCalls:
       m_Calls: []
+--- !u!114 &1287469872
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1287469865}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: aa936fe9683fb8e45a5b2a6e525c66a2, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  Camera: {fileID: 963194227}
+  MaxDistance: 10
+  LayerMask:
+    serializedVersion: 2
+    m_Bits: 4294967295
 --- !u!1 &1299075460
 GameObject:
   m_ObjectHideFlags: 0

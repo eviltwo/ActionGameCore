@@ -2,18 +2,13 @@
 using System;
 using System.Collections.Generic;
 using UnityEngine;
-using UnityEngine.Assertions;
 using UnityEngine.Events;
-using UnityEngine.EventSystems;
 using UnityEngine.InputSystem;
 
 namespace Interactions
 {
     public class InteractSystem : MonoBehaviour
     {
-        [SerializeField]
-        public BaseRaycaster Raycaster = null;
-
         [SerializeField]
         private InputActionReference[] _interactActionReferences = null;
 
@@ -23,37 +18,27 @@ namespace Interactions
         [SerializeField]
         public ButtonInteractEvent InteractEvent;
 
-        private List<RaycastResult> _resultBuffer = new List<RaycastResult>();
+        private List<GameObject> _findBuffer = new List<GameObject>();
 
         private List<IInteractHandler> _pointerOverInteractables = new List<IInteractHandler>();
 
         public IReadOnlyList<IInteractHandler> PointerOverInteractables => _pointerOverInteractables;
 
-        private static PointerEventData DummyPointerEventData => new PointerEventData(null);
-
-        private void Reset()
-        {
-            Raycaster = FindObjectOfType<BaseRaycaster>();
-        }
-
-        private void Start()
-        {
-            Assert.IsNotNull(Raycaster, "Raycaster is not set.");
-        }
-
         private void Update()
         {
-            if (Raycaster == null)
+            _findBuffer.Clear();
+            var finders = ObjectFinderManager.GetObjectFinders();
+            var finderCount = finders.Count;
+            for (int i = 0; i < finderCount; i++)
             {
-                return;
+                var finder = finders[i];
+                finder.Find(_findBuffer);
             }
 
             _pointerOverInteractables.Clear();
-            _resultBuffer.Clear();
-            Raycaster.Raycast(DummyPointerEventData, _resultBuffer);
-            if (_resultBuffer.Count > 0)
+            if (_findBuffer.Count > 0)
             {
-                var result = _resultBuffer[0];
+                var result = _findBuffer[0];
                 result.gameObject.GetComponents(_pointerOverInteractables);
             }
 
