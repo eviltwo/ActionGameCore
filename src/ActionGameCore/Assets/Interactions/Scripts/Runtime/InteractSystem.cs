@@ -28,6 +28,8 @@ namespace Interactions
 
         public IReadOnlyList<IInteractHandler> PointerOverInteractables => _pointerOverInteractables;
 
+        private static PointerEventData DummyPointerEventData => new PointerEventData(null);
+
         private void Reset()
         {
             Raycaster = FindObjectOfType<BaseRaycaster>();
@@ -47,7 +49,7 @@ namespace Interactions
 
             _pointerOverInteractables.Clear();
             _resultBuffer.Clear();
-            Raycaster.Raycast(new PointerEventData(EventSystem.current), _resultBuffer);
+            Raycaster.Raycast(DummyPointerEventData, _resultBuffer);
             if (_resultBuffer.Count > 0)
             {
                 var result = _resultBuffer[0];
