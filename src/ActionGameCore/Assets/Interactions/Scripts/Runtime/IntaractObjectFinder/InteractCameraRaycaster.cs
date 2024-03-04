@@ -43,8 +43,7 @@ namespace Interactions
             }
 
             var ray = new Ray(Camera.transform.position, Camera.transform.forward);
-            var dist = Camera.farClipPlane;
-            var hitCount = Physics.RaycastNonAlloc(ray, _hitBuffer, dist, LayerMask);
+            var hitCount = Physics.RaycastNonAlloc(ray, _hitBuffer, MaxDistance, LayerMask);
 
             if (hitCount > 1)
             {
