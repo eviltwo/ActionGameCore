@@ -33,7 +33,7 @@ TPS視点のカメラ。
 https://github.com/eviltwo/ActionGameCore.git?path=src/ActionGameCore/Assets/TPSCameraControls
 ```
 
-### Interactions v0.4.0
+### Interactions v0.5.0
 視線の先にある物にインタラクトする。3Dボタンなど。 [README](src/ActionGameCore/Assets/Interactions/README.md)
 ```
 https://github.com/eviltwo/ActionGameCore.git?path=src/ActionGameCore/Assets/Interactions

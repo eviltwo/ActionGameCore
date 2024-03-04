@@ -1,9 +1,10 @@
-![interactions](https://github.com/eviltwo/ActionGameCore/assets/7721151/b120e93d-d9a7-4a83-bcc3-7f1bda0e6d3d)
+
+![selection_2](https://github.com/eviltwo/ActionGameCore/assets/7721151/93be2999-f0ae-468a-9fc6-e7d83c31d50c)
 
 # Interactions
 このパッケージは、カメラの中心にあるオブジェクトを検知し、プレイヤーが操作できるようにします。（例：電気のスイッチや棚の引き出し）
 
-また、オブジェクトを見た時に"Eキーで開ける"などの文字を出せる仕組みも実装予定です。
+また、オブジェクトを見た時に"Eキーで開ける"などの文字を出せます。
 
 
 # 注意
@@ -28,6 +29,9 @@ https://github.com/eviltwo/ActionGameCore.git?path=src/ActionGameCore/Assets/Int
     - InteractEventに任意の関数を設定します。
     - 例えば、CubeのGameObjectのSetActiveを設定します。
 1. ゲームを再生し、Cubeを見ながら"E"を押します。Cubeが消えるなど意図通りの関数が実行されたら完了です。
+
+# Select/Deselect Event
+`InteractSystem` コンポーネントの `SelectEvent` や、ボタン等に `SelectEventTrigger` コンポーネントを付けることで、直視した/やめた時のイベントを利用できます。これを使って直視している間に"ボタンを押せ"などのテキストを表示することができます。
 
 # Change log
 [CHANGELOG.md](CHANGELOG.md)

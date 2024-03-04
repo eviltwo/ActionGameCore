@@ -1,5 +1,11 @@
 namespace Interactions
 {
+    public interface ISelectHandler
+    {
+        void OnSelect();
+        void OnDeselect();
+    }
+
     public interface IInteractHandler
     {
         string InputActionNameFilter { get; }
