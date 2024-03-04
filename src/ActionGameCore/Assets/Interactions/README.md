@@ -1,0 +1,31 @@
+# Interactions
+このパッケージは、カメラの中心にあるオブジェクトを検知し、プレイヤーが操作できるようにします。（例：電気のスイッチや棚の引き出し）
+
+また、オブジェクトを見た時に"Eキーで開ける"などの文字を出せる仕組みも実装予定です。
+
+
+# 注意
+新InputSystemに対応しており、旧InputManagerは未対応です。
+
+# インポート
+UPMを使用して必要なパッケージをインポートできます。
+1. InputSystemパッケージをインポートします。
+1. このInteractionsパッケージをインポートします。
+```
+https://github.com/eviltwo/ActionGameCore.git?path=src/ActionGameCore/Assets/Interactions
+```
+
+# 初期設定
+1. InputActionAssetを作成し、その中に"Interact"というActionを作ります。
+    - キーボードの"E"キーを割り当てます。
+1. メニューの"GameObject > Create Empty"で空オブジェクトを作成し、 `InteractRaycaster` と `InteractSystem` コンポーネントをアタッチします。
+1. `InteractSystem` のInteractActionReferencesに"Interact"を設定します。
+
+# 3Dボタン
+1. CubeなどのColliderが付いているオブジェクトを作成し、 `Button3D` コンポーネントをアタッチします。
+    - InteractEventに任意の関数を設定します。
+    - 例えば、CubeのGameObjectのSetActiveを設定します。
+1. ゲームを再生し、Cubeを見ながら"E"を押します。Cubeが消えるなど意図通りの関数が実行されたら完了です。
+
+# Change log
+[CHANGELOG.md](CHANGELOG.md)
