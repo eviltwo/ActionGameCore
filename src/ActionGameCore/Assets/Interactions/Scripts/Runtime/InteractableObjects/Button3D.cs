@@ -7,9 +7,9 @@ namespace Interactions
     public class Button3D : Selectable3D, IInteractHandler
     {
         [SerializeField]
-        public string InputActionName = "Interact";
+        public string InteractActionNameFilter = "Interact";
 
-        public string InputActionNameFilter => InputActionName;
+        public string InputActionNameFilter => InteractActionNameFilter;
 
         [Serializable]
         public class ButtonInteractEvent : UnityEvent<InteractEventData> { }
