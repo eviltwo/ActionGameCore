@@ -1,0 +1,21 @@
+{
+    "name": "com.eviltwo.interactions",
+    "displayName": "Interactions",
+    "version": "0.1.0",             
+    "unity": "2022.3",
+    "description": "Eye interaction for 3D objects.",
+    "author": {
+        "name": "DAIKI(eviltwo)",
+        "url": "https://github.com/eviltwo"
+    },
+
+    "keywords": [
+        "Action",
+        "FPS",
+        "Camera",
+        "Interact"
+    ],
+
+    "dependencies": {
+    }
+}
