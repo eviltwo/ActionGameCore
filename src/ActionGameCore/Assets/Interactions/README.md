@@ -1,4 +1,5 @@
-![interactions](https://github.com/eviltwo/ActionGameCore/assets/7721151/b120e93d-d9a7-4a83-bcc3-7f1bda0e6d3d)
+
+![selection_2](https://github.com/eviltwo/ActionGameCore/assets/7721151/93be2999-f0ae-468a-9fc6-e7d83c31d50c)
 
 # Interactions
 このパッケージは、カメラの中心にあるオブジェクトを検知し、プレイヤーが操作できるようにします。（例：電気のスイッチや棚の引き出し）
