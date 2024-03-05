@@ -1,6 +1,5 @@
 #if SUPPORT_INPUTSYSTEM
 using UnityEngine;
-using UnityEngine.Assertions;
 using UnityEngine.InputSystem;
 
 namespace FPSCameraControls
@@ -8,13 +7,7 @@ namespace FPSCameraControls
     public class FPSCameraController : MonoBehaviour
     {
         [SerializeField]
-        private InputActionAsset _inputActionAsset = null;
-
-        [SerializeField]
-        private string _actionMapName = "Player";
-
-        [SerializeField]
-        private string _lookActionName = "Look";
+        private InputActionReference _lookActionReference = null;
 
         [SerializeField]
         public Transform Target = null;
@@ -34,24 +27,11 @@ namespace FPSCameraControls
         [SerializeField]
         private bool _lockAndHideCursor = true;
 
-        private InputAction _lookAction;
         private Vector3 _lookAngles;
 
         private void Start()
         {
-            Assert.IsNotNull(_inputActionAsset, "InputActionAsset is not set");
-            if (_inputActionAsset != null)
-            {
-                _inputActionAsset.Enable();
-                var map = _inputActionAsset.FindActionMap(_actionMapName);
-                Assert.IsNotNull(map, $"Action map {_actionMapName} not found");
-                if (map != null)
-                {
-                    _lookAction = map.FindAction(_lookActionName);
-                    Assert.IsNotNull(_lookAction, $"Action {_lookActionName} not found in {_actionMapName}");
-                }
-            }
-
+            _lookActionReference.action.Enable();
             if (_lockAndHideCursor)
             {
                 Cursor.visible = false;
@@ -69,9 +49,9 @@ namespace FPSCameraControls
             var position = Target.position + new Vector3(0, OffsetY, 0);
 
             var rotation = Target.rotation;
-            if (_lookAction != null)
+            if (_lookActionReference != null)
             {
-                var look = _lookAction.ReadValue<Vector2>();
+                var look = _lookActionReference.action.ReadValue<Vector2>();
                 _lookAngles.x = Mathf.Clamp(_lookAngles.x - look.y * Sensitivity, -AngleMax, -AngleMin); // Look up and down
                 _lookAngles.y = (_lookAngles.y + look.x * Sensitivity) % 360; // Look left and right
                 rotation = Quaternion.Euler(_lookAngles);

@@ -1360,9 +1360,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 76bea717eafe0f14188a4b53c3696b73, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  _inputActionAsset: {fileID: -944628639613478452, guid: d050cea4568e2be47bc9a4f2c136ccf9, type: 3}
-  _actionMapName: Player
-  _lookActionName: Look
+  _lookActionReference: {fileID: -5630151704836100654, guid: d050cea4568e2be47bc9a4f2c136ccf9, type: 3}
   Target: {fileID: 177208273}
   OffsetY: 1.5
   Sensitivity: 0.1
