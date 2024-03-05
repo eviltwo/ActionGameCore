@@ -31,7 +31,7 @@ namespace FPSCameraControls
 
         private void Start()
         {
-            _lookActionReference.action.Enable();
+            _lookActionReference?.action.Enable();
             if (_lockAndHideCursor)
             {
                 Cursor.visible = false;
