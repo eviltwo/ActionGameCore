@@ -1,5 +1,9 @@
 # Changelog
 
+## [0.6.1] - 2024-03-06
+### Fixed
+- Fix input action enabled.
+
 ## [0.6.0] - 2024-03-06
 ### Changed
 - Change parameter type of input to InputActionReference.
