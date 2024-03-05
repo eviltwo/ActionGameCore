@@ -1,7 +1,6 @@
 #if SUPPORT_INPUTSYSTEM
 using CharacterControls.Movements;
 using UnityEngine;
-using UnityEngine.Assertions;
 using UnityEngine.InputSystem;
 
 namespace CharacterControls.Inputs
@@ -9,40 +8,15 @@ namespace CharacterControls.Inputs
     public class CharacterMoveInput : MonoBehaviour
     {
         [SerializeField]
-        private InputActionAsset _inputActionAsset;
+        private InputActionReference _moveActionReference = null;
 
         [SerializeField]
-        private string _actionMapName = "Player";
-
-        [SerializeField]
-        private string _moveActionName = "Move";
-
-        [SerializeField]
-        private string _jumpActionName = "Jump";
+        private InputActionReference _jumpActionReference = null;
 
         public IMoveController MoveController { get; set; }
 
-        private InputAction _moveAction;
-
-        private InputAction _jumpAction;
-
         private void Start()
         {
-            Assert.IsNotNull(_inputActionAsset, "InputActionAsset is not set");
-            if (_inputActionAsset != null)
-            {
-                _inputActionAsset.Enable();
-                var map = _inputActionAsset.FindActionMap(_actionMapName);
-                Assert.IsNotNull(map, $"Action map {_actionMapName} not found");
-                if (map != null)
-                {
-                    _moveAction = map.FindAction(_moveActionName);
-                    _jumpAction = map.FindAction(_jumpActionName);
-                    Assert.IsNotNull(_moveAction, $"Action {_moveActionName} not found in {_actionMapName}");
-                    Assert.IsNotNull(_jumpAction, $"Action {_jumpActionName} not found in {_actionMapName}");
-                }
-            }
-
             MoveController = GetComponent<IMoveController>();
         }
 
@@ -53,12 +27,12 @@ namespace CharacterControls.Inputs
                 return;
             }
 
-            if (_moveAction != null)
+            if (_moveActionReference != null)
             {
-                MoveController.SetMoveInput(_moveAction.ReadValue<Vector2>());
+                MoveController.SetMoveInput(_moveActionReference.action.ReadValue<Vector2>());
             }
 
-            if (_jumpAction != null && _jumpAction.WasPressedThisFrame())
+            if (_jumpActionReference != null && _jumpActionReference.action.WasPressedThisFrame())
             {
                 MoveController.SetJumpInput(1.0f);
             }
