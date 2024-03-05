@@ -15,25 +15,25 @@
   - InputSystemパッケージをインストールすればデフォルト設定のままで動作します。
 
 # パッケージ一覧 (UPMでインポートできます)
-### CharacterControls v0.5.4
+### CharacterControls v0.6.1
 キャラクターの歩行・ジャンプ。
 ```
 https://github.com/eviltwo/ActionGameCore.git?path=src/ActionGameCore/Assets/CharacterControls
 ```
 
-### FPSCameraControls v1.0.1
+### FPSCameraControls v1.1.0
 FPS視点のカメラ。
 ```
 https://github.com/eviltwo/ActionGameCore.git?path=src/ActionGameCore/Assets/FPSCameraControls
 ```
 
-### TPSCameraControls v1.0.1
+### TPSCameraControls v1.1.0
 TPS視点のカメラ。
 ```
 https://github.com/eviltwo/ActionGameCore.git?path=src/ActionGameCore/Assets/TPSCameraControls
 ```
 
-### Interactions v0.5.0
+### Interactions v0.5.1
 視線の先にある物にインタラクトする。3Dボタンなど。 [README](src/ActionGameCore/Assets/Interactions/README.md)
 ```
 https://github.com/eviltwo/ActionGameCore.git?path=src/ActionGameCore/Assets/Interactions
