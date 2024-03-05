@@ -17,6 +17,8 @@ namespace CharacterControls.Inputs
 
         private void Start()
         {
+            _moveActionReference?.action.Enable();
+            _jumpActionReference?.action.Enable();
             MoveController = GetComponent<IMoveController>();
         }
 

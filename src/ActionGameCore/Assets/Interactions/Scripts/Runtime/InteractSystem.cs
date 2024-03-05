@@ -31,6 +31,14 @@ namespace Interactions
 
         public IReadOnlyList<ISelectHandler> SelectedObjects => _selectedObjects;
 
+        private void Start()
+        {
+            foreach (var actionReference in _interactActionReferences)
+            {
+                actionReference?.action.Enable();
+            }
+        }
+
         private void Update()
         {
             // Keep last selected objects
