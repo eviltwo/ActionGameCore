@@ -1,5 +1,9 @@
 # Changelog
 
+## [0.6.0] - 2024-03-06
+### Changed
+- Change parameter type of input to InputActionReference.
+
 ## [0.5.4] - 2024-03-04
 ### Fixed
 - Fix error with default input action asset.
