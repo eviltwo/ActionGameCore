@@ -7,7 +7,10 @@ namespace FPSCameraControls
     public class FPSCameraController : MonoBehaviour
     {
         [SerializeField]
-        private InputActionReference _lookActionReference = null;
+        private InputActionReference _deltaActionReference = null;
+
+        [SerializeField]
+        private InputActionReference _continuousActionreference = null;
 
         [SerializeField]
         public Transform Target = null;
@@ -16,7 +19,7 @@ namespace FPSCameraControls
         public float OffsetY = 1.5f;
 
         [SerializeField]
-        public float Sensitivity = 0.1f;
+        public float Sensitivity = 1.0f;
 
         [SerializeField]
         public float AngleMin = -90.0f;
@@ -31,7 +34,8 @@ namespace FPSCameraControls
 
         private void Start()
         {
-            _lookActionReference?.action.Enable();
+            _deltaActionReference?.action.Enable();
+            _continuousActionreference?.action.Enable();
             if (_lockAndHideCursor)
             {
                 Cursor.visible = false;
@@ -49,11 +53,24 @@ namespace FPSCameraControls
             var position = Target.position + new Vector3(0, OffsetY, 0);
 
             var rotation = Target.rotation;
-            if (_lookActionReference != null)
+            if (_deltaActionReference != null)
             {
-                var look = _lookActionReference.action.ReadValue<Vector2>();
-                _lookAngles.x = Mathf.Clamp(_lookAngles.x - look.y * Sensitivity, -AngleMax, -AngleMin); // Look up and down
-                _lookAngles.y = (_lookAngles.y + look.x * Sensitivity) % 360; // Look left and right
+                var deltaAngle = Vector2.zero;
+                if (_continuousActionreference != null && _deltaActionReference.action.IsInProgress())
+                {
+                    const float DpiAverage = 96;
+                    var dpi = Screen.dpi == 0 ? DpiAverage : Screen.dpi;
+                    const float InchForTurn = 13;
+                    deltaAngle = _deltaActionReference.action.ReadValue<Vector2>() / dpi / InchForTurn * 180;
+                }
+                else if (_continuousActionreference != null && _continuousActionreference.action.IsInProgress())
+                {
+                    const float SecondsForTurn = 1.0f;
+                    deltaAngle = _continuousActionreference.action.ReadValue<Vector2>() * Time.deltaTime / SecondsForTurn * 180;
+                }
+
+                _lookAngles.x = Mathf.Clamp(_lookAngles.x - deltaAngle.y * Sensitivity, -AngleMax, -AngleMin); // Look up and down
+                _lookAngles.y = (_lookAngles.y + deltaAngle.x * Sensitivity) % 360; // Look left and right
                 rotation = Quaternion.Euler(_lookAngles);
             }
 
