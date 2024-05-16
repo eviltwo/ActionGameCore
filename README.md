@@ -21,13 +21,13 @@
 https://github.com/eviltwo/ActionGameCore.git?path=src/ActionGameCore/Assets/CharacterControls
 ```
 
-### FPSCameraControls v1.1.0
+### FPSCameraControls v1.2.0
 FPS視点のカメラ。
 ```
 https://github.com/eviltwo/ActionGameCore.git?path=src/ActionGameCore/Assets/FPSCameraControls
 ```
 
-### TPSCameraControls v1.1.0
+### TPSCameraControls v1.2.0
 TPS視点のカメラ。
 ```
 https://github.com/eviltwo/ActionGameCore.git?path=src/ActionGameCore/Assets/TPSCameraControls
