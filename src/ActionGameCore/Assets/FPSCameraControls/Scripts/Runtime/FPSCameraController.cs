@@ -1,4 +1,5 @@
 #if SUPPORT_INPUTSYSTEM
+using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.InputSystem;
 
@@ -28,9 +29,14 @@ namespace FPSCameraControls
         public float AngleMax = 90.0f;
 
         [SerializeField]
+        public int SmoothingFrameCount = 2;
+
+        [SerializeField]
         private bool _lockAndHideCursor = true;
 
         private Vector3 _lookAngles;
+        private List<Vector2> _deltaPositions = new List<Vector2>();
+        private List<float> _deltaTimes = new List<float>();
 
         private void Start()
         {
@@ -52,29 +58,59 @@ namespace FPSCameraControls
 
             var position = Target.position + new Vector3(0, OffsetY, 0);
 
-            var rotation = Target.rotation;
+            var deltaAngle = Vector2.zero;
             if (_deltaActionReference != null)
             {
-                var deltaAngle = Vector2.zero;
-                if (_continuousActionreference != null && _deltaActionReference.action.IsInProgress())
+                _deltaPositions.Add(_deltaActionReference.action.ReadValue<Vector2>());
+                _deltaTimes.Add(Time.deltaTime);
+                SmoothingFrameCount = Mathf.Max(1, SmoothingFrameCount);
+                if (_deltaPositions.Count > SmoothingFrameCount)
                 {
-                    const float DpiAverage = 96;
-                    var dpi = Screen.dpi == 0 ? DpiAverage : Screen.dpi;
-                    const float InchForTurn = 13;
-                    deltaAngle = _deltaActionReference.action.ReadValue<Vector2>() / dpi / InchForTurn * 180;
+                    _deltaPositions.RemoveRange(0, _deltaPositions.Count - SmoothingFrameCount);
+                    _deltaTimes.RemoveRange(0, _deltaTimes.Count - SmoothingFrameCount);
                 }
-                else if (_continuousActionreference != null && _continuousActionreference.action.IsInProgress())
+                var totalPosition = Vector2.zero;
+                var totalTime = 0f;
+                for (int i = 0; i < _deltaPositions.Count; i++)
                 {
-                    const float SecondsForTurn = 1.0f;
-                    deltaAngle = _continuousActionreference.action.ReadValue<Vector2>() * Time.deltaTime / SecondsForTurn * 180;
+                    totalPosition += _deltaPositions[i];
+                    totalTime += _deltaTimes[i];
                 }
+                var deltaPositionAverage = totalPosition / totalTime;
+                var smoothDeltaPosition = deltaPositionAverage * Time.deltaTime;
 
-                _lookAngles.x = Mathf.Clamp(_lookAngles.x - deltaAngle.y * Sensitivity, -AngleMax, -AngleMin); // Look up and down
-                _lookAngles.y = (_lookAngles.y + deltaAngle.x * Sensitivity) % 360; // Look left and right
-                rotation = Quaternion.Euler(_lookAngles);
+                const float DpiAverage = 96;
+                var dpi = Screen.dpi == 0 ? DpiAverage : Screen.dpi;
+                const float InchForTurn = 13;
+                deltaAngle += smoothDeltaPosition / dpi / InchForTurn * 180;
             }
 
+            if (_continuousActionreference != null)
+            {
+                const float SecondsForTurn = 1.0f;
+                deltaAngle += _continuousActionreference.action.ReadValue<Vector2>() * Time.deltaTime / SecondsForTurn * 180;
+            }
+
+            _lookAngles.x = Mathf.Clamp(_lookAngles.x - deltaAngle.y * Sensitivity, -AngleMax, -AngleMin); // Look up and down
+            _lookAngles.y = (_lookAngles.y + deltaAngle.x * Sensitivity) % 360; // Look left and right
+            var rotation = Quaternion.Euler(_lookAngles);
             transform.SetPositionAndRotation(position, rotation);
+        }
+
+        private void OnDrawGizmos()
+        {
+            if (!Application.isPlaying)
+            {
+                return;
+            }
+
+            Gizmos.color = Color.red;
+            for (int i = 0; i < _deltaPositions.Count; i++)
+            {
+                var d = _deltaPositions[i].x;
+                var basePos = new Vector3(i * 0.1f, 1, 0);
+                Gizmos.DrawLine(basePos, basePos + Vector3.up * d);
+            }
         }
     }
 }
