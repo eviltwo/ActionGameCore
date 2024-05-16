@@ -1,4 +1,10 @@
 # Changelog
+## [1.2.0] - 2024-05-16
+### Changed
+- Match camera sensitivity of mouse and controller.
+  - Rename and add serialized field for input action reference.
+  - Change default sensitivity to 1.0
+  - Change calculation of camera angle.
 
 ## [1.1.0] - 2024-03-06
 ### Fixed

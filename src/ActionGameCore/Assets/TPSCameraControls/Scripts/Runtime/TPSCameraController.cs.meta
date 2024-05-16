@@ -4,7 +4,8 @@ MonoImporter:
   externalObjects: {}
   serializedVersion: 2
   defaultReferences:
-  - _lookActionReference: {fileID: -5630151704836100654, guid: ca9f5fa95ffab41fb9a615ab714db018, type: 3}
+  - _deltaActionReference: {fileID: -5630151704836100654, guid: ca9f5fa95ffab41fb9a615ab714db018, type: 3}
+  - _continuousActionreference: {instanceID: 0}
   - Target: {instanceID: 0}
   executionOrder: 0
   icon: {instanceID: 0}
