@@ -1,9 +1,7 @@
 {
-    "name": "CharacterControls.Inputs",
+    "name": "ActionGameCoreSamples.Steamworks",
     "rootNamespace": "",
     "references": [
-        "GUID:75469ad4d38634e559750d17036d5f7c",
-        "GUID:9cb36de80f6aa0e4f925e2361fb85950",
         "GUID:68bd7fdb68ef2684e982e8a9825b18a5"
     ],
     "includePlatforms": [],
@@ -14,11 +12,6 @@
     "autoReferenced": false,
     "defineConstraints": [],
     "versionDefines": [
-        {
-            "name": "com.unity.inputsystem",
-            "expression": "",
-            "define": "SUPPORT_INPUTSYSTEM"
-        },
         {
             "name": "com.rlabrecque.steamworks.net",
             "expression": "",
