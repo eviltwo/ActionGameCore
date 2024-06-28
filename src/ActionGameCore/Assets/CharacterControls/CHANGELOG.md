@@ -1,5 +1,9 @@
 # Changelog
 
+## [0.7.0] - 2024-06-28
+### Changed
+- Support SteamInput.
+
 ## [0.6.1] - 2024-03-06
 ### Fixed
 - Fix input action enabled.

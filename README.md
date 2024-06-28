@@ -11,23 +11,27 @@
 - 各機能は別々のパッケージ・コンポーネントに分離しています。
   - 例えば、キャラクターの移動処理とカメラ処理は別なので、ゲームに合わせてFPSカメラとTPSカメラを選べます。
   - 他にもボタンのインタラクトやキャラクターアニメーションなども分離して実装予定です。
-- 新しいInputSystemに対応していますが、古いInputManagerは未対応です。
-  - InputSystemパッケージをインストールすればデフォルト設定のままで動作します。
+
+|入力パッケージ|動作||
+|---|---|---|
+|旧InputManager|×|
+|InputSystem|○|
+|SteamInput|○|SteamwWorksのInit処理は別途必要|
 
 # パッケージ一覧 (UPMでインポートできます)
-### CharacterControls v0.6.1
+### CharacterControls v0.7.0
 キャラクターの歩行・ジャンプ。
 ```
 https://github.com/eviltwo/ActionGameCore.git?path=src/ActionGameCore/Assets/CharacterControls
 ```
 
-### FPSCameraControls v1.2.0
+### FPSCameraControls v1.3.0
 FPS視点のカメラ。
 ```
 https://github.com/eviltwo/ActionGameCore.git?path=src/ActionGameCore/Assets/FPSCameraControls
 ```
 
-### TPSCameraControls v1.2.0
+### TPSCameraControls v1.3.0
 TPS視点のカメラ。
 ```
 https://github.com/eviltwo/ActionGameCore.git?path=src/ActionGameCore/Assets/TPSCameraControls

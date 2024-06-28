@@ -1,18 +1,18 @@
-#if SUPPORT_INPUTSYSTEM
 using System.Collections.Generic;
 using UnityEngine;
+
+#if SUPPORT_INPUTSYSTEM
 using UnityEngine.InputSystem;
+#endif 
+
+#if SUPPORT_STEAMWORKS && !DISABLESTEAMWORKS
+using Steamworks;
+#endif
 
 namespace FPSCameraControls
 {
     public class FPSCameraController : MonoBehaviour
     {
-        [SerializeField]
-        private InputActionReference _deltaActionReference = null;
-
-        [SerializeField]
-        private InputActionReference _continuousActionreference = null;
-
         [SerializeField]
         public Transform Target = null;
 
@@ -34,14 +34,53 @@ namespace FPSCameraControls
         [SerializeField]
         private bool _lockAndHideCursor = true;
 
+#if SUPPORT_INPUTSYSTEM
+        [Header("InputSystem")]
+        [SerializeField]
+        private InputActionReference _deltaActionReference = null;
+
+        [SerializeField]
+        private InputActionReference _continuousActionreference = null;
+#endif 
+
+#if SUPPORT_STEAMWORKS
+        [Header("SteamInput")]
+        [SerializeField]
+        private string _steamCameraActionName = "Camera";
+#endif
+
+#if SUPPORT_STEAMWORKS && !DISABLESTEAMWORKS
+        private bool _steamInitialized;
+        private InputAnalogActionHandle_t _steamCameraActionHandle;
+        private InputHandle_t[] _connectedControllerInputHandles = new InputHandle_t[Constants.STEAM_INPUT_MAX_COUNT];
+#endif
+
         private Vector3 _lookAngles;
         private List<Vector2> _deltaPositions = new List<Vector2>();
         private List<float> _deltaTimes = new List<float>();
 
         private void Start()
         {
+#if SUPPORT_INPUTSYSTEM
             _deltaActionReference?.action.Enable();
             _continuousActionreference?.action.Enable();
+#endif
+
+#if SUPPORT_STEAMWORKS && !DISABLESTEAMWORKS
+            try
+            {
+                if (!string.IsNullOrEmpty(_steamCameraActionName))
+                {
+                    _steamCameraActionHandle = SteamInput.GetAnalogActionHandle(_steamCameraActionName);
+                }
+                _steamInitialized = true;
+            }
+            catch (System.Exception e)
+            {
+                Debug.LogError($"Failed to initialize Steam Input: {e.Message}");
+            }
+#endif
+
             if (_lockAndHideCursor)
             {
                 Cursor.visible = false;
@@ -59,9 +98,33 @@ namespace FPSCameraControls
             var position = Target.position + new Vector3(0, OffsetY, 0);
 
             var deltaAngle = Vector2.zero;
+
+            var deltaPosition = Vector2.zero;
+
+#if SUPPORT_INPUTSYSTEM
             if (_deltaActionReference != null)
             {
-                _deltaPositions.Add(_deltaActionReference.action.ReadValue<Vector2>());
+                var v = _deltaActionReference.action.ReadValue<Vector2>();
+                deltaPosition = v.sqrMagnitude > deltaPosition.sqrMagnitude ? v : deltaPosition;
+            }
+#endif
+
+#if SUPPORT_STEAMWORKS && !DISABLESTEAMWORKS
+            if (_steamInitialized && _steamCameraActionHandle != null)
+            {
+                var controllerCount = SteamInput.GetConnectedControllers(_connectedControllerInputHandles);
+                for (int i = 0; i < controllerCount; i++)
+                {
+                    var inputHandle = _connectedControllerInputHandles[i];
+                    var data = SteamInput.GetAnalogActionData(inputHandle, _steamCameraActionHandle);
+                    var v = new Vector2(data.x, -data.y);
+                    deltaPosition = v.sqrMagnitude > deltaPosition.sqrMagnitude ? v : deltaPosition;
+                }
+            }
+#endif
+
+            {
+                _deltaPositions.Add(deltaPosition);
                 _deltaTimes.Add(Time.deltaTime);
                 SmoothingFrameCount = Mathf.Max(1, SmoothingFrameCount);
                 if (_deltaPositions.Count > SmoothingFrameCount)
@@ -82,14 +145,18 @@ namespace FPSCameraControls
                 const float DpiAverage = 96;
                 var dpi = Screen.dpi == 0 ? DpiAverage : Screen.dpi;
                 const float InchForTurn = 13;
-                deltaAngle += smoothDeltaPosition / dpi / InchForTurn * 180;
+                var v = smoothDeltaPosition / dpi / InchForTurn * 180;
+                deltaAngle = v.sqrMagnitude > deltaAngle.sqrMagnitude ? v : deltaAngle;
             }
 
+#if SUPPORT_INPUTSYSTEM
             if (_continuousActionreference != null)
             {
                 const float SecondsForTurn = 1.0f;
-                deltaAngle += _continuousActionreference.action.ReadValue<Vector2>() * Time.deltaTime / SecondsForTurn * 180;
+                var v = _continuousActionreference.action.ReadValue<Vector2>() * Time.deltaTime / SecondsForTurn * 180;
+                deltaAngle = v.sqrMagnitude > deltaAngle.sqrMagnitude ? v : deltaAngle;
             }
+#endif
 
             _lookAngles.x = Mathf.Clamp(_lookAngles.x - deltaAngle.y * Sensitivity, -AngleMax, -AngleMin); // Look up and down
             _lookAngles.y = (_lookAngles.y + deltaAngle.x * Sensitivity) % 360; // Look left and right
@@ -114,4 +181,3 @@ namespace FPSCameraControls
         }
     }
 }
-#endif

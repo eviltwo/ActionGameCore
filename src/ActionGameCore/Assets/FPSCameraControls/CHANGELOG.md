@@ -1,4 +1,9 @@
 # Changelog
+
+## [1.3.0] - 2024-06-28
+### Changed
+- Support SteamInput.
+
 ## [1.2.0] - 2024-05-16
 ### Changed
 - Match camera sensitivity of mouse and controller.
