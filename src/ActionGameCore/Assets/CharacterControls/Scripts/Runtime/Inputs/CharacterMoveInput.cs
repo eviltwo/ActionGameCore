@@ -135,7 +135,10 @@ namespace CharacterControls.Inputs
             }
 #endif
 
-            MoveController.SetJumpInput(value ? 1 : 0);
+            if (value)
+            {
+                MoveController.SetJumpInput(1);
+            }
         }
     }
 }
