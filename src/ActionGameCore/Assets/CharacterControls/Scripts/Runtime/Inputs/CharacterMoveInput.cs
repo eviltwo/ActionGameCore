@@ -14,6 +14,7 @@ namespace CharacterControls.Inputs
     public class CharacterMoveInput : MonoBehaviour
     {
 #if SUPPORT_INPUTSYSTEM
+        [Header("InputSystem")]
         [SerializeField]
         private InputActionReference _moveActionReference = null;
 
@@ -22,6 +23,7 @@ namespace CharacterControls.Inputs
 #endif
 
 #if SUPPORT_STEAMWORKS
+        [Header("SteamInput")]
         [SerializeField]
         private string _steamMoveActionName = "Move";
 
