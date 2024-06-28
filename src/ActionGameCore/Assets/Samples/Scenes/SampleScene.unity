@@ -178,7 +178,7 @@ CapsuleCollider:
   m_ProvidesContacts: 0
   m_Enabled: 1
   serializedVersion: 2
-  m_Radius: 0.5
+  m_Radius: 0.2
   m_Height: 2
   m_Direction: 1
   m_Center: {x: 0, y: 1, z: 0}
@@ -245,7 +245,6 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   _moveActionReference: {fileID: -1680190386980627800, guid: d050cea4568e2be47bc9a4f2c136ccf9, type: 3}
   _jumpActionReference: {fileID: 1120369429361536294, guid: d050cea4568e2be47bc9a4f2c136ccf9, type: 3}
-  _steamActionSetName: InGameControls
   _steamMoveActionName: Move
   _steamJumpActionName: Jump
 --- !u!1 &209071631
@@ -1268,6 +1267,7 @@ GameObject:
   - component: {fileID: 963194228}
   - component: {fileID: 963194227}
   - component: {fileID: 963194226}
+  - component: {fileID: 963194231}
   - component: {fileID: 963194229}
   - component: {fileID: 963194230}
   m_Layer: 0
@@ -1316,7 +1316,7 @@ Camera:
     y: 0
     width: 1
     height: 1
-  near clip plane: 0.3
+  near clip plane: 0.1
   far clip plane: 1000
   field of view: 60
   orthographic: 0
@@ -1363,8 +1363,6 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 76bea717eafe0f14188a4b53c3696b73, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  _deltaActionReference: {fileID: -5630151704836100654, guid: d050cea4568e2be47bc9a4f2c136ccf9, type: 3}
-  _continuousActionreference: {fileID: 4073854690803581126, guid: d050cea4568e2be47bc9a4f2c136ccf9, type: 3}
   Target: {fileID: 177208273}
   OffsetY: 1.5
   Sensitivity: 1
@@ -1384,8 +1382,6 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 555f5af3ecd5c7a47862ada8aded246a, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  _deltaActionReference: {fileID: -5630151704836100654, guid: d050cea4568e2be47bc9a4f2c136ccf9, type: 3}
-  _continuousActionreference: {fileID: 4073854690803581126, guid: d050cea4568e2be47bc9a4f2c136ccf9, type: 3}
   Target: {fileID: 177208273}
   Offset: {x: 0, y: 1.5, z: 0}
   OffsetRotation: 1
@@ -1399,6 +1395,21 @@ MonoBehaviour:
     m_Bits: 4294967295
   SmoothingFrameCount: 2
   _lockAndHideCursor: 1
+--- !u!114 &963194231
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 963194225}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: df57dca951846c8418748accb8bd0568, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  _deltaActionReference: {fileID: -5630151704836100654, guid: d050cea4568e2be47bc9a4f2c136ccf9, type: 3}
+  _continuousActionreference: {fileID: 4073854690803581126, guid: d050cea4568e2be47bc9a4f2c136ccf9, type: 3}
+  _steamCameraActionName: Camera
 --- !u!1 &970461546
 GameObject:
   m_ObjectHideFlags: 0
