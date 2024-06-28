@@ -61,8 +61,10 @@ namespace FPSCameraControls
 
         private void Start()
         {
+#if SUPPORT_INPUTSYSTEM
             _deltaActionReference?.action.Enable();
             _continuousActionreference?.action.Enable();
+#endif
 
 #if SUPPORT_STEAMWORKS && !DISABLESTEAMWORKS
             try
