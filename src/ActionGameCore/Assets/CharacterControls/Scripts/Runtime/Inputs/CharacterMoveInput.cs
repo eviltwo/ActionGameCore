@@ -109,7 +109,6 @@ namespace CharacterControls.Inputs
                     var data = SteamInput.GetAnalogActionData(_connectedControllerInputHandles[i], _steamMoveActionHandle);
                     var v = new Vector2(data.x, data.y);
                     value = v.sqrMagnitude > value.sqrMagnitude ? v : value;
-                    Debug.Log(v);
                 }
             }
 #endif
