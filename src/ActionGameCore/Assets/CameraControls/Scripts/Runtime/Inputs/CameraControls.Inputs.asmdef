@@ -1,9 +1,10 @@
 {
-    "name": "TPSCameraControls",
+    "name": "CameraControls.Inputs",
     "rootNamespace": "",
     "references": [
         "GUID:75469ad4d38634e559750d17036d5f7c",
-        "GUID:68bd7fdb68ef2684e982e8a9825b18a5"
+        "GUID:68bd7fdb68ef2684e982e8a9825b18a5",
+        "GUID:aeee1f7ffaac59745996d0fed47daca6"
     ],
     "includePlatforms": [],
     "excludePlatforms": [],

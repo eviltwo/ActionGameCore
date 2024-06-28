@@ -1,5 +1,11 @@
 # Changelog
 
+## [1.4.0] - 2024-06-28
+### Changed
+- Merged with TPS package.
+- Renamed namespace to CameraControls.
+- Separated script to Controller and Input.
+
 ## [1.3.0] - 2024-06-28
 ### Changed
 - Support SteamInput.
@@ -12,13 +18,13 @@
   - Change calculation of camera angle.
 
 ## [1.1.0] - 2024-03-06
-### Fixed
+### Changed
 - Change parameter type of input to InputActionReference.
 
 ## [1.0.1] - 2024-03-04
-### Fixed
+### Changed
 - Show input action name to inspector.
 
-## [1.0.0] - 2024-03-03
+## [1.0.0] - 2024-02-27
 ### Added
-- Add camera rotation and wall check.
+- Add camera rotation.
