@@ -1,5 +1,11 @@
 # Changelog
 
+## [1.4.0] - 2024-06-28
+### Changed
+- Merged with TPS package.
+- Renamed namespace to CameraControls.
+- Separated script to Controller and Input.
+
 ## [1.3.0] - 2024-06-28
 ### Changed
 - Support SteamInput.

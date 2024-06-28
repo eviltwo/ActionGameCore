@@ -1,9 +1,9 @@
 {
-    "name": "com.eviltwo.fps-camera-controls",
-    "displayName": "FPS Camera Controls",
-    "version": "1.3.0",             
+    "name": "com.eviltwo.camera-controls",
+    "displayName": "Camera Controls",
+    "version": "1.4.0",             
     "unity": "2022.3",
-    "description": "Camera movements for FPS.",
+    "description": "Camera movements for FPS and TPS.",
     "author": {
         "name": "DAIKI(eviltwo)",
         "url": "https://github.com/eviltwo"
