@@ -16,7 +16,7 @@
 |---|---|---|
 |旧InputManager|×|
 |InputSystem|○|
-|SteamInput|○|SteamwWorksのInit処理は別途必要|
+|SteamInput|○|[Steamwworks.NET](https://github.com/rlabrecque/Steamworks.NET)のInit処理は別途必要|
 
 # パッケージ一覧 (UPMでインポートできます)
 ### CharacterControls v0.7.0
