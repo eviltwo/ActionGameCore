@@ -16,7 +16,7 @@
 |---|---|---|
 |旧InputManager|×|
 |InputSystem|○|
-|SteamInput|○|[Steamwworks.NET](https://github.com/rlabrecque/Steamworks.NET)のInit処理は別途必要|
+|SteamInputAPI|×|実装済だが問題があるため[削除予定](https://github.com/eviltwo/ActionGameCore/issues/8)|
 
 # パッケージ一覧 (UPMでインポートできます)
 ### CharacterControls v0.7.0
