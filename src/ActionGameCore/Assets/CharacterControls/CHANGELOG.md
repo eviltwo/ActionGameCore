@@ -1,8 +1,12 @@
 # Changelog
 
+## [0.8.0] - 2024-07-02
+### Removed
+- Remove SteamInputAPI.
+
 ## [0.7.0] - 2024-06-28
 ### Changed
-- Support SteamInput.
+- Support SteamInputAPI.
 
 ## [0.6.1] - 2024-03-06
 ### Fixed
