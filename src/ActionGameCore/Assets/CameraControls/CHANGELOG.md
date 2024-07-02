@@ -1,5 +1,9 @@
 # Changelog
 
+## [1.5.0] - 2024-07-02
+### Removed
+- Remove SteamInputAPI.
+
 ## [1.4.0] - 2024-06-28
 ### Changed
 - Merged with TPS package.
