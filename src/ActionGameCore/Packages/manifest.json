@@ -2,7 +2,6 @@
   "dependencies": {
     "com.eviltwo.dropped-object-order-rule": "https://github.com/eviltwo/DroppedObjectOrderRule.git?path=src/DroppedObjectOrderRule/Assets/DroppedObjectOrderRule",
     "com.eviltwo.paste-next": "https://github.com/eviltwo/PasteNext.git?path=src/PasteNext/Assets/PasteNext",
-    "com.rlabrecque.steamworks.net": "https://github.com/rlabrecque/Steamworks.NET.git?path=/com.rlabrecque.steamworks.net",
     "com.unity.collab-proxy": "2.2.0",
     "com.unity.feature.development": "1.0.1",
     "com.unity.inputsystem": "1.5.1",
