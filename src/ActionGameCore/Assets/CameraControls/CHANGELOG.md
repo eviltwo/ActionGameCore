@@ -1,18 +1,14 @@
 # Changelog
 
-## [1.5.0] - 2024-07-02
-### Removed
-- Remove SteamInputAPI.
+## [1.6.0] - 2024-07-07
+### Changed
+- Changed to use PlayerInput component
 
 ## [1.4.0] - 2024-06-28
 ### Changed
 - Merged with TPS package.
 - Renamed namespace to CameraControls.
 - Separated script to Controller and Input.
-
-## [1.3.0] - 2024-06-28
-### Changed
-- Support SteamInput.
 
 ## [1.2.0] - 2024-05-16
 ### Changed
