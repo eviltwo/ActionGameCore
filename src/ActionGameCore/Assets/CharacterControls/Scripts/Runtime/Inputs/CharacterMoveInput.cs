@@ -8,7 +8,7 @@ namespace CharacterControls.Inputs
     public class CharacterMoveInput : MonoBehaviour
     {
         [SerializeField]
-        private PlayerInput _playerInput = null;
+        public PlayerInput PlayerInput = null;
 
         [SerializeField]
         private InputActionReference _moveActionReference = null;
@@ -18,15 +18,15 @@ namespace CharacterControls.Inputs
 
         public IMoveController MoveController { get; set; }
 
-        private void Awake()
+        private void Start()
         {
             MoveController = GetComponent<IMoveController>();
-            _playerInput.onActionTriggered += OnActionTriggerd;
+            PlayerInput.onActionTriggered += OnActionTriggerd;
         }
 
         private void OnDestroy()
         {
-            _playerInput.onActionTriggered -= OnActionTriggerd;
+            PlayerInput.onActionTriggered -= OnActionTriggerd;
         }
 
         private void OnActionTriggerd(InputAction.CallbackContext context)
