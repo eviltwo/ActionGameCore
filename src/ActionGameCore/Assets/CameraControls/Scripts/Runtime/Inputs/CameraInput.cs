@@ -1,44 +1,62 @@
-using System.Collections.Generic;
+#if ENABLE_INPUT_SYSTEM
 using CameraControls.Controllers;
 using UnityEngine;
 
-#if SUPPORT_INPUTSYSTEM
+
 using UnityEngine.InputSystem;
-#endif
 
 
 namespace CameraControls.Inputs
 {
     public class CameraInput : MonoBehaviour
     {
-#if SUPPORT_INPUTSYSTEM
-        [Header("InputSystem")]
         [SerializeField]
-        private InputActionReference _deltaActionReference = null;
+        private PlayerInput _playerInput = null;
 
         [SerializeField]
-        private InputActionReference _continuousActionreference = null;
-#endif 
+        private InputActionReference _lookActionReference = null;
 
         private ICameraController _cameraController;
-        private List<ICameraController> _cameraControllerBuffer = new List<ICameraController>();
+        private Vector2 _deltaPixels;
+        private Vector2 _analogValues;
 
-        private void Start()
+        private void Awake()
         {
             _cameraController = GetComponent<ICameraController>();
+            _playerInput.onActionTriggered += OnActionTriggerd;
+        }
 
-#if SUPPORT_INPUTSYSTEM
-            _deltaActionReference?.action.Enable();
-            _continuousActionreference?.action.Enable();
-#endif
+        private void OnDestroy()
+        {
+            _playerInput.onActionTriggered -= OnActionTriggerd;
+        }
+
+        private void OnActionTriggerd(InputAction.CallbackContext context)
+        {
+            if (_lookActionReference != null && context.action.name == _lookActionReference.action.name)
+            {
+                OnLook(context);
+            }
+        }
+
+        private void OnLook(InputAction.CallbackContext context)
+        {
+            if (context.action.activeControl.device is Pointer)
+            {
+                _deltaPixels = context.ReadValue<Vector2>();
+            }
+            else
+            {
+                _analogValues = context.ReadValue<Vector2>();
+            }
         }
 
         private void Update()
         {
             if (_cameraController == null || !_cameraController.Enabled)
             {
-                GetComponents(_cameraControllerBuffer);
-                foreach (var controller in _cameraControllerBuffer)
+                var cameraControllers = GetComponents<ICameraController>();
+                foreach (var controller in cameraControllers)
                 {
                     if (controller.Enabled)
                     {
@@ -50,56 +68,24 @@ namespace CameraControls.Inputs
             }
 
             var deltaAngle = Vector2.zero;
-
-            // Digital input
-            {
-                var deltaPixels = GetDeltaPixels();
-                const float DpiAverage = 96;
-                var dpi = Screen.dpi == 0 ? DpiAverage : Screen.dpi;
-                const float InchForTurn = 13;
-                var v = deltaPixels / dpi / InchForTurn * 180;
-                deltaAngle = v.sqrMagnitude > deltaAngle.sqrMagnitude ? v : deltaAngle;
-            }
-
-            // Analog input
-            {
-                var analogValues = GetAnalogValues();
-                const float SecondsForTurn = 1.0f;
-                var v = analogValues * Time.deltaTime / SecondsForTurn * 180;
-                deltaAngle = v.sqrMagnitude > deltaAngle.sqrMagnitude ? v : deltaAngle;
-            }
-
+            deltaAngle += PixelToAngle(_deltaPixels);
+            deltaAngle += AnalogToAngle(_analogValues, Time.deltaTime);
             _cameraController.SetDeltaAngles(deltaAngle);
         }
 
-        private Vector2 GetDeltaPixels()
+        private static Vector2 PixelToAngle(Vector2 pixels)
         {
-            var value = Vector2.zero;
-
-#if SUPPORT_INPUTSYSTEM
-            if (_deltaActionReference != null)
-            {
-                var v = _deltaActionReference.action.ReadValue<Vector2>();
-                value = v.sqrMagnitude > value.sqrMagnitude ? v : value;
-            }
-#endif
-
-            return value;
+            const float DpiAverage = 96;
+            var dpi = Screen.dpi == 0 ? DpiAverage : Screen.dpi;
+            const float InchForTurn = 13;
+            return pixels / dpi / InchForTurn * 180;
         }
 
-        private Vector2 GetAnalogValues()
+        private static Vector2 AnalogToAngle(Vector2 analog, float deltaTime)
         {
-            var value = Vector2.zero;
-
-#if SUPPORT_INPUTSYSTEM
-            if (_continuousActionreference != null)
-            {
-                var v = _continuousActionreference.action.ReadValue<Vector2>();
-                value = v.sqrMagnitude > value.sqrMagnitude ? v : value;
-            }
-#endif
-
-            return value;
+            const float SecondsForTurn = 1.0f;
+            return analog * Time.deltaTime / SecondsForTurn * 180;
         }
     }
 }
+#endif

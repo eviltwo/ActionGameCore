@@ -1,12 +1,8 @@
 # Changelog
 
-## [0.8.0] - 2024-07-02
-### Removed
-- Remove SteamInputAPI.
-
-## [0.7.0] - 2024-06-28
+## [0.9.0] - 2024-07-07
 ### Changed
-- Support SteamInputAPI.
+- Changed to use PlayerInput component
 
 ## [0.6.1] - 2024-03-06
 ### Fixed
