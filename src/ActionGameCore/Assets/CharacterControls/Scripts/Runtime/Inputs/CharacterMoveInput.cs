@@ -1,72 +1,60 @@
+#if ENABLE_INPUT_SYSTEM
 using CharacterControls.Movements;
 using UnityEngine;
-
-#if SUPPORT_INPUTSYSTEM
 using UnityEngine.InputSystem;
-#endif
 
 namespace CharacterControls.Inputs
 {
     public class CharacterMoveInput : MonoBehaviour
     {
-#if SUPPORT_INPUTSYSTEM
-        [Header("InputSystem")]
+        [SerializeField]
+        private PlayerInput _playerInput = null;
+
         [SerializeField]
         private InputActionReference _moveActionReference = null;
 
         [SerializeField]
         private InputActionReference _jumpActionReference = null;
-#endif
 
         public IMoveController MoveController { get; set; }
 
-        private void Start()
+        private void Awake()
         {
-#if SUPPORT_INPUTSYSTEM
-            _moveActionReference?.action.Enable();
-            _jumpActionReference?.action.Enable();
             MoveController = GetComponent<IMoveController>();
-#endif
+            _playerInput.onActionTriggered += OnActionTriggerd;
         }
 
-        private void Update()
+        private void OnDestroy()
         {
-            if (MoveController == null)
-            {
-                return;
-            }
-
-            UpdateMoveInput();
-            UpdateJumpInput();
+            _playerInput.onActionTriggered -= OnActionTriggerd;
         }
 
-        private void UpdateMoveInput()
+        private void OnActionTriggerd(InputAction.CallbackContext context)
         {
-            var value = Vector2.zero;
-
-#if SUPPORT_INPUTSYSTEM
-            if (_moveActionReference != null)
+            if (_moveActionReference != null && context.action.name == _moveActionReference.action.name)
             {
-                var v = _moveActionReference.action.ReadValue<Vector2>();
-                value = v.sqrMagnitude > value.sqrMagnitude ? v : value;
+                OnMove(context);
             }
-#endif
 
+            if (_jumpActionReference != null && context.action.name == _jumpActionReference.action.name)
+            {
+                OnJump(context);
+            }
+        }
+
+        private void OnMove(InputAction.CallbackContext context)
+        {
+            var value = context.ReadValue<Vector2>();
             MoveController.SetMoveInput(value);
         }
 
-        private void UpdateJumpInput()
+        private void OnJump(InputAction.CallbackContext context)
         {
-            var value = false;
-
-#if SUPPORT_INPUTSYSTEM
-            value |= _jumpActionReference != null && _jumpActionReference.action.WasPressedThisFrame();
-#endif
-
-            if (value)
+            if (context.performed && context.startTime > Time.realtimeSinceStartup - 0.5f)
             {
                 MoveController.SetJumpInput(1);
             }
         }
     }
 }
+#endif
