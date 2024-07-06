@@ -1,17 +1,14 @@
 #if ENABLE_INPUT_SYSTEM
 using CameraControls.Controllers;
 using UnityEngine;
-
-
 using UnityEngine.InputSystem;
-
 
 namespace CameraControls.Inputs
 {
     public class CameraInput : MonoBehaviour
     {
         [SerializeField]
-        private PlayerInput _playerInput = null;
+        public PlayerInput PlayerInput = null;
 
         [SerializeField]
         private InputActionReference _lookActionReference = null;
@@ -20,15 +17,15 @@ namespace CameraControls.Inputs
         private Vector2 _deltaPixels;
         private Vector2 _analogValues;
 
-        private void Awake()
+        private void Start()
         {
             _cameraController = GetComponent<ICameraController>();
-            _playerInput.onActionTriggered += OnActionTriggerd;
+            PlayerInput.onActionTriggered += OnActionTriggerd;
         }
 
         private void OnDestroy()
         {
-            _playerInput.onActionTriggered -= OnActionTriggerd;
+            PlayerInput.onActionTriggered -= OnActionTriggerd;
         }
 
         private void OnActionTriggerd(InputAction.CallbackContext context)
