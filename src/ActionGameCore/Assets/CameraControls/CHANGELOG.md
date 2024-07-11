@@ -1,5 +1,9 @@
 # Changelog
 
+## [1.6.2] - 2024-07-11
+### Changed
+- Change camera rotation speed according to time scale.
+
 ## [1.6.0] - 2024-07-07
 ### Changed
 - Changed to use PlayerInput component

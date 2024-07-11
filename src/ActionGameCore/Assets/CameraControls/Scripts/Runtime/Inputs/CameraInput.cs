@@ -65,7 +65,7 @@ namespace CameraControls.Inputs
             }
 
             var deltaAngle = Vector2.zero;
-            deltaAngle += PixelToAngle(_deltaPixels);
+            deltaAngle += PixelToAngle(_deltaPixels) * Time.timeScale;
             deltaAngle += AnalogToAngle(_analogValues, Time.deltaTime);
             _cameraController.SetDeltaAngles(deltaAngle);
         }
@@ -81,7 +81,7 @@ namespace CameraControls.Inputs
         private static Vector2 AnalogToAngle(Vector2 analog, float deltaTime)
         {
             const float SecondsForTurn = 1.0f;
-            return analog * Time.deltaTime / SecondsForTurn * 180;
+            return analog * deltaTime / SecondsForTurn * 180;
         }
     }
 }
