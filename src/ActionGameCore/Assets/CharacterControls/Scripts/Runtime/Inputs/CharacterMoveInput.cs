@@ -63,13 +63,10 @@ namespace CharacterControls.Inputs
 
         private void OnJump(InputAction.CallbackContext context)
         {
-            if (context.performed && context.startTime > Time.realtimeSinceStartup - 0.5f)
+            var count = _floatReceivers.Count;
+            for (var i = 0; i < count; i++)
             {
-                var count = _floatReceivers.Count;
-                for (var i = 0; i < count; i++)
-                {
-                    _floatReceivers[i].OnReceiveInput("Jump", 1.0f);
-                }
+                _floatReceivers[i].OnReceiveInput("Jump", context.performed ? 1f : 0f);
             }
         }
     }

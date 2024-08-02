@@ -292,6 +292,8 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: a88582a46f078c34abd5557f01a484bf, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  BufferedInputDuration: 0.3
+  CoyoteDuration: 0.1
   JumpSpeed: 5
   SkipGroundCheckTime: 0.1
 --- !u!1 &209071631
