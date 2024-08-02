@@ -1,8 +1,11 @@
+using System;
+using System.Collections.Generic;
+using CharacterControls.Movements.Modules;
 using UnityEngine;
 
 namespace CharacterControls.Movements
 {
-    public class CharacterMoveController : MonoBehaviour, IMoveController
+    public class CharacterMoveController : MonoBehaviour, IInputReceiver<Vector2>
     {
         [SerializeField]
         public Rigidbody Rigidbody = null;
@@ -40,13 +43,12 @@ namespace CharacterControls.Movements
         [SerializeField]
         public float AirWalkSpeed = 2.0f;
 
-        [SerializeField]
-        public float JumpSpeed = 5.0f;
-
         private Vector2 _moveInput;
-        private float _jumpInput;
         private FrictionCalculator _frictionCalculator = new FrictionCalculator();
-        private float _jumpElapsedTime;
+        private RequestManager _skipGroundCheckRequestManager = new RequestManager();
+        private List<ICharacterMoveModule> _modules = new List<ICharacterMoveModule>();
+
+        public bool IsGrounded { get; private set; }
 
         private void Reset()
         {
@@ -67,21 +69,27 @@ namespace CharacterControls.Movements
                 _capsuleCollider.height = newHeight;
                 _capsuleCollider.center = newCenter;
             }
+
+            CollectModules();
         }
 
-        public void SetMoveInput(Vector2 moveInput)
+        public void CollectModules()
         {
-            if (moveInput.sqrMagnitude > 1)
+            _modules.Clear();
+            GetComponents(_modules);
+        }
+
+        public void OnReceiveInput(string key, Vector2 value)
+        {
+            if (key == "Move")
             {
-                moveInput.Normalize();
+                if (value.sqrMagnitude > 1)
+                {
+                    value.Normalize();
+                }
+
+                _moveInput = value;
             }
-
-            _moveInput = moveInput;
-        }
-
-        public void SetJumpInput(float jumpInput)
-        {
-            _jumpInput = jumpInput;
         }
 
         private void FixedUpdate()
@@ -91,14 +99,12 @@ namespace CharacterControls.Movements
                 return;
             }
 
-            const float GroundCheckSkipDurationAfterJump = 0.1f;
-            _jumpElapsedTime += Time.fixedDeltaTime;
-            var skipGroundCheck = _jumpElapsedTime < GroundCheckSkipDurationAfterJump;
-
             const float DistanceMergin = 0.1f;
             const float Radius = 0.1f;
             var legRay = new Ray(transform.position + transform.up * (StepHeightMax + DistanceMergin + Radius), -transform.up);
-            if (!skipGroundCheck && Physics.SphereCast(legRay, Radius, out var hitInfo, StepHeightMax + DistanceMergin))
+            RaycastHit hitInfo = default;
+            IsGrounded = !_skipGroundCheckRequestManager.HasRequest() && Physics.SphereCast(legRay, Radius, out hitInfo, StepHeightMax + DistanceMergin);
+            if (IsGrounded)
             {
                 // Leg spring
                 var hitDistance = hitInfo.distance - DistanceMergin;
@@ -122,7 +128,7 @@ namespace CharacterControls.Movements
                 var relativeVelocity = Rigidbody.velocity;
                 if (hitInfo.rigidbody != null)
                 {
-                    relativeVelocity -= hitInfo.rigidbody.velocity;
+                    relativeVelocity -= hitInfo.rigidbody.GetPointVelocity(hitInfo.point);
                 }
                 var diffVelocity = targetVelocity - relativeVelocity;
                 diffVelocity.y = 0;
@@ -132,15 +138,6 @@ namespace CharacterControls.Movements
                 _frictionCalculator.Calculate(-diffVelocity);
                 var addVelocity = _frictionCalculator.FrictionForce;
                 Rigidbody.AddForce(addVelocity, ForceMode.Acceleration);
-
-                // Jump
-                if (_jumpInput > 0)
-                {
-                    var verticalSpeed = Vector3.Dot(Rigidbody.velocity, transform.up);
-                    verticalSpeed = Mathf.Min(verticalSpeed, 0);
-                    Rigidbody.AddForce(transform.up * (JumpSpeed - verticalSpeed), ForceMode.VelocityChange);
-                    _jumpElapsedTime = 0;
-                }
             }
             else
             {
@@ -151,7 +148,12 @@ namespace CharacterControls.Movements
                 Rigidbody.AddForce(addVelocity, ForceMode.Acceleration);
             }
 
-            _jumpInput = 0;
+            var modulePayload = new CharacterMoveModulePayload(this);
+            var count = _modules.Count;
+            for (var i = 0; i < count; i++)
+            {
+                _modules[i].FixedUpdateModule(modulePayload);
+            }
         }
 
         private Vector3 GetForwardOfMovementSpace()
@@ -178,6 +180,46 @@ namespace CharacterControls.Movements
         {
             Gizmos.color = Color.red;
             Gizmos.DrawLine(transform.position, transform.position + transform.up * StepHeightMax);
+        }
+
+        public IDisposable RequestSkipGroundCheck()
+        {
+            return _skipGroundCheckRequestManager.GetRequest();
+        }
+
+        private class Request : IDisposable
+        {
+            private readonly RequestManager _requestManager;
+            public Request(RequestManager requestManager)
+            {
+                _requestManager = requestManager;
+            }
+
+            public void Dispose()
+            {
+                _requestManager.ReturnRequest(this);
+            }
+        }
+
+        private class RequestManager
+        {
+            private readonly List<Request> _requests = new List<Request>();
+            public Request GetRequest()
+            {
+                var request = new Request(this);
+                _requests.Add(request);
+                return request;
+            }
+
+            public void ReturnRequest(Request request)
+            {
+                _requests.Remove(request);
+            }
+
+            public bool HasRequest()
+            {
+                return _requests.Count > 0;
+            }
         }
     }
 }
