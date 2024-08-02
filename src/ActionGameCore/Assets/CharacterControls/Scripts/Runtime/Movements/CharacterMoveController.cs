@@ -29,6 +29,15 @@ namespace CharacterControls.Movements
         public float WalkSpeed = 5.0f;
 
         [SerializeField]
+        public float FrictionStrength = 20;
+
+        [SerializeField]
+        public float StaticFriction = 0.1f;
+
+        [SerializeField]
+        public float DynamicFriction = 1.0f;
+
+        [SerializeField]
         public float AirWalkSpeed = 2.0f;
 
         [SerializeField]
@@ -36,6 +45,8 @@ namespace CharacterControls.Movements
 
         private Vector2 _moveInput;
         private float _jumpInput;
+        private FrictionCalculator _frictionCalculator = new FrictionCalculator();
+        private float _jumpElapsedTime;
 
         private void Reset()
         {
@@ -80,9 +91,14 @@ namespace CharacterControls.Movements
                 return;
             }
 
+            const float GroundCheckSkipDurationAfterJump = 0.1f;
+            _jumpElapsedTime += Time.fixedDeltaTime;
+            var skipGroundCheck = _jumpElapsedTime < GroundCheckSkipDurationAfterJump;
+
             const float DistanceMergin = 0.1f;
-            var legRay = new Ray(transform.position + transform.up * (StepHeightMax + DistanceMergin), -transform.up);
-            if (Physics.Raycast(legRay, out var hitInfo, StepHeightMax + DistanceMergin))
+            const float Radius = 0.1f;
+            var legRay = new Ray(transform.position + transform.up * (StepHeightMax + DistanceMergin + Radius), -transform.up);
+            if (!skipGroundCheck && Physics.SphereCast(legRay, Radius, out var hitInfo, StepHeightMax + DistanceMergin))
             {
                 // Leg spring
                 var hitDistance = hitInfo.distance - DistanceMergin;
@@ -103,18 +119,27 @@ namespace CharacterControls.Movements
                 var forward = GetForwardOfMovementSpace();
                 var right = Vector3.Cross(transform.up, forward);
                 var targetVelocity = (forward * _moveInput.y + right * _moveInput.x) * WalkSpeed;
-                var currentVerticalVelocity = Vector3.Project(Rigidbody.velocity, transform.up);
-                var floorVelocity = Vector3.zero;
+                var relativeVelocity = Rigidbody.velocity;
                 if (hitInfo.rigidbody != null)
                 {
-                    floorVelocity = hitInfo.rigidbody.velocity - Vector3.Project(hitInfo.rigidbody.velocity, transform.up);
+                    relativeVelocity -= hitInfo.rigidbody.velocity;
                 }
-                Rigidbody.velocity = targetVelocity + currentVerticalVelocity + floorVelocity;
+                var diffVelocity = targetVelocity - relativeVelocity;
+                diffVelocity.y = 0;
+                _frictionCalculator.StaticFriction = StaticFriction;
+                _frictionCalculator.DynamicFriction = DynamicFriction;
+                _frictionCalculator.Strength = FrictionStrength;
+                _frictionCalculator.Calculate(-diffVelocity);
+                var addVelocity = _frictionCalculator.FrictionForce;
+                Rigidbody.AddForce(addVelocity, ForceMode.Acceleration);
 
                 // Jump
                 if (_jumpInput > 0)
                 {
-                    Rigidbody.velocity += transform.up * JumpSpeed;
+                    var verticalSpeed = Vector3.Dot(Rigidbody.velocity, transform.up);
+                    verticalSpeed = Mathf.Min(verticalSpeed, 0);
+                    Rigidbody.AddForce(transform.up * (JumpSpeed - verticalSpeed), ForceMode.VelocityChange);
+                    _jumpElapsedTime = 0;
                 }
             }
             else

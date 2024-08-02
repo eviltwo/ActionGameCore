@@ -230,6 +230,9 @@ MonoBehaviour:
   LegStrength: 40
   LegSuspenion: 20
   WalkSpeed: 5
+  FrictionStrength: 30
+  StaticFriction: 0.1
+  DynamicFriction: 1
   AirWalkSpeed: 5
   JumpSpeed: 5
 --- !u!114 &177208277
@@ -1388,7 +1391,7 @@ MonoBehaviour:
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 963194225}
-  m_Enabled: 1
+  m_Enabled: 0
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: 76bea717eafe0f14188a4b53c3696b73, type: 3}
   m_Name: 
@@ -1407,7 +1410,7 @@ MonoBehaviour:
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 963194225}
-  m_Enabled: 0
+  m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: 555f5af3ecd5c7a47862ada8aded246a, type: 3}
   m_Name: 
@@ -7576,7 +7579,7 @@ Transform:
   m_GameObject: {fileID: 1691489387}
   m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
   m_LocalPosition: {x: 0, y: 1, z: 0}
-  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_LocalScale: {x: 0.5, y: 1, z: 0.5}
   m_ConstrainProportionsScale: 0
   m_Children: []
   m_Father: {fileID: 177208273}
