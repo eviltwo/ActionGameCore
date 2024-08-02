@@ -144,14 +144,11 @@ namespace CharacterControls.Movements
             }
             else
             {
-                if (_moveInput.sqrMagnitude > 0)
-                {
-                    var forward = GetForwardOfMovementSpace();
-                    var right = Vector3.Cross(transform.up, forward);
-                    var targetVelocity = (forward * _moveInput.y + right * _moveInput.x) * AirWalkSpeed;
-                    var addVelocity = targetVelocity - (Rigidbody.velocity - Vector3.Project(Rigidbody.velocity, transform.up));
-                    Rigidbody.AddForce(addVelocity, ForceMode.Acceleration);
-                }
+                var forward = GetForwardOfMovementSpace();
+                var right = Vector3.Cross(transform.up, forward);
+                var targetVelocity = (forward * _moveInput.y + right * _moveInput.x) * AirWalkSpeed;
+                var addVelocity = targetVelocity - (Rigidbody.velocity - Vector3.Project(Rigidbody.velocity, transform.up));
+                Rigidbody.AddForce(addVelocity, ForceMode.Acceleration);
             }
 
             _jumpInput = 0;
