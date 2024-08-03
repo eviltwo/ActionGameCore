@@ -17,6 +17,9 @@ namespace CharacterControls.Movements
         public float StepHeightMax = 0.25f;
 
         [SerializeField]
+        public float SlopeLimit = 45.0f;
+
+        [SerializeField]
         private bool _autoResizeCapsuleCollider = true;
 
         [SerializeField]
@@ -108,7 +111,9 @@ namespace CharacterControls.Movements
             const float Radius = 0.1f;
             var legRay = new Ray(transform.position + transform.up * (StepHeightMax + Radius + DistanceTopMergin), -transform.up);
             RaycastHit hitInfo = default;
-            IsGrounded = !_skipGroundCheckRequestManager.HasRequest() && Physics.SphereCast(legRay, Radius, out hitInfo, StepHeightMax + DistanceTopMergin + DistanceMergin);
+            IsGrounded = !_skipGroundCheckRequestManager.HasRequest()
+                && Physics.SphereCast(legRay, Radius, out hitInfo, StepHeightMax + DistanceTopMergin + DistanceMergin)
+                && Vector3.Angle(hitInfo.normal, Vector3.up) < SlopeLimit;
             if (IsGrounded)
             {
                 // Leg spring
@@ -130,7 +135,8 @@ namespace CharacterControls.Movements
                 var forward = GetForwardOfMovementSpace();
                 var right = Vector3.Cross(transform.up, forward);
                 var inputBaseVelocity = (forward * _moveInput.y + right * _moveInput.x) * WalkSpeed;
-                TargetVelocity = Vector3.ProjectOnPlane(inputBaseVelocity, hitInfo.normal);
+                TargetVelocity = Quaternion.FromToRotation(transform.up, hitInfo.normal) * inputBaseVelocity;
+                Debug.DrawRay(transform.position, TargetVelocity, Color.red);
                 RelativeVelocityToGround = Rigidbody.velocity;
                 if (hitInfo.rigidbody != null)
                 {
