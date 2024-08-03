@@ -137,7 +137,7 @@ namespace CharacterControls.Movements
                     RelativeVelocityToGround -= hitInfo.rigidbody.GetPointVelocity(hitInfo.point);
                 }
                 var diffVelocity = TargetVelocity - RelativeVelocityToGround;
-                diffVelocity -= Vector3.Project(diffVelocity, hitInfo.normal); // Remove velocity on normal
+                diffVelocity -= Vector3.Project(diffVelocity, transform.up); // Remove velocity on normal
                 _frictionCalculator.StaticFriction = StaticFriction;
                 _frictionCalculator.DynamicFriction = DynamicFriction;
                 _frictionCalculator.Strength = FrictionStrength;
