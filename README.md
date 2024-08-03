@@ -1,7 +1,7 @@
 # ActionGameCore
 3Dゲームにおけるキャラクターの基本動作のスクリプトです。アクションゲームだけでなく、謎解きゲームや散歩ゲームなどキャラクターが移動するゲーム全般で使えます。
  
-![chara](https://github.com/eviltwo/ActionGameCore/assets/7721151/6921cd9a-26cf-404f-8d62-856556d62d1f)
+![action](https://github.com/user-attachments/assets/c8a67533-cd89-4db9-bcca-5d2db4c2f2d3)
 
 # 特徴
 - キャラクターはRigidbodyで動き、カメラの向きに合わせて前後左右に歩きます。
