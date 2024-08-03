@@ -26,6 +26,7 @@ namespace CharacterControls.Movements.Modules
         private float _jumpElapsedTime;
         private float _groundElapsedTime;
         private IDisposable _skipGroundCheckRequest;
+        private ModuleRequestManager _stopJumpRequestManager = new ModuleRequestManager();
 
         private void OnDisable()
         {
@@ -53,6 +54,18 @@ namespace CharacterControls.Movements.Modules
                 _groundElapsedTime = 0;
             }
 
+            _jumpElapsedTime += Time.fixedDeltaTime;
+            if (_skipGroundCheckRequest != null && _jumpElapsedTime > SkipGroundCheckTime)
+            {
+                _skipGroundCheckRequest.Dispose();
+                _skipGroundCheckRequest = null;
+            }
+
+            if (_stopJumpRequestManager.HasRequest())
+            {
+                return;
+            }
+
             var virtualGrounded = _groundElapsedTime < CoyoteDuration;
             if (virtualGrounded && _jumpInput && Time.time - _jumpInputTime < BufferedInputDuration)
             {
@@ -66,13 +79,11 @@ namespace CharacterControls.Movements.Modules
                 _skipGroundCheckRequest = payload.Controller.RequestSkipGroundCheck();
                 OnJump?.Invoke();
             }
+        }
 
-            _jumpElapsedTime += Time.fixedDeltaTime;
-            if (_skipGroundCheckRequest != null && _jumpElapsedTime > SkipGroundCheckTime)
-            {
-                _skipGroundCheckRequest.Dispose();
-                _skipGroundCheckRequest = null;
-            }
+        public IDisposable RequestStopJump()
+        {
+            return _stopJumpRequestManager.GetRequest();
         }
     }
 }
