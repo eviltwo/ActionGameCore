@@ -103,18 +103,19 @@ namespace CharacterControls.Movements
                 return;
             }
 
-            const float DistanceMergin = 0.1f;
+            const float DistanceMergin = 0.2f;
             const float Radius = 0.1f;
-            var legRay = new Ray(transform.position + transform.up * (StepHeightMax + DistanceMergin + Radius), -transform.up);
+            var legRay = new Ray(transform.position + transform.up * (StepHeightMax + Radius), -transform.up);
             RaycastHit hitInfo = default;
             IsGrounded = !_skipGroundCheckRequestManager.HasRequest() && Physics.SphereCast(legRay, Radius, out hitInfo, StepHeightMax + DistanceMergin);
             if (IsGrounded)
             {
                 // Leg spring
-                var hitDistance = hitInfo.distance - DistanceMergin;
-                var springRatio = Mathf.Clamp01(hitDistance / StepHeightMax);
+                var springRatio = Mathf.Clamp01(hitInfo.distance / StepHeightMax);
                 var springPushForce = (1 - springRatio) * LegStrength;
                 Rigidbody.AddForce(springPushForce * transform.up, ForceMode.Acceleration);
+
+                Debug.Log($"hitDisntace: {hitInfo.distance}, springRatio: {springRatio}");
 
                 // Leg suspension
                 var currentVelocity = Rigidbody.velocity;
@@ -128,14 +129,16 @@ namespace CharacterControls.Movements
                 // Move horizontal
                 var forward = GetForwardOfMovementSpace();
                 var right = Vector3.Cross(transform.up, forward);
-                TargetVelocity = (forward * _moveInput.y + right * _moveInput.x) * WalkSpeed;
+                var inputBaseVelocity = (forward * _moveInput.y + right * _moveInput.x) * WalkSpeed;
+                TargetVelocity = Vector3.ProjectOnPlane(inputBaseVelocity, hitInfo.normal);
                 RelativeVelocityToGround = Rigidbody.velocity;
                 if (hitInfo.rigidbody != null)
                 {
                     RelativeVelocityToGround -= hitInfo.rigidbody.GetPointVelocity(hitInfo.point);
                 }
                 var diffVelocity = TargetVelocity - RelativeVelocityToGround;
-                diffVelocity.y = 0;
+                diffVelocity -= Vector3.Project(diffVelocity, hitInfo.normal); // Remove velocity on normal
+                Debug.DrawLine(transform.position, transform.position + TargetVelocity, Color.red);
                 _frictionCalculator.StaticFriction = StaticFriction;
                 _frictionCalculator.DynamicFriction = DynamicFriction;
                 _frictionCalculator.Strength = FrictionStrength;
