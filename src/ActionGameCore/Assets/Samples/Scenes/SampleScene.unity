@@ -319,14 +319,13 @@ MonoBehaviour:
   CheckDistances:
   - 0.31
   CheckRadius: 0.1
-  MaxHeight: 2
+  MaxHeight: 1.6
   MinHeight: 1
   SlopeLimit: 45
   StopMoveDuration: 0.5
   SafetyCapsuleStart: 0.5
   SafetyCapsuleEnd: 1.5
   SafetyCapsuleRadius: 0.1
-  JumpModule: {fileID: 177208279}
   OnPullUp:
     m_PersistentCalls:
       m_Calls:
@@ -1600,7 +1599,6 @@ MonoBehaviour:
   WallLayerMask:
     serializedVersion: 2
     m_Bits: 4294967295
-  SmoothingFrameCount: 2
   _lockAndHideCursor: 1
 --- !u!114 &963194231
 MonoBehaviour:
@@ -3217,8 +3215,8 @@ Transform:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 1529882886}
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: -4.5, y: 4, z: -1.5}
-  m_LocalScale: {x: 1, y: 2, z: 1}
+  m_LocalPosition: {x: -4.5, y: 3.41, z: -1.5}
+  m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children: []
   m_Father: {fileID: 0}

@@ -35,19 +35,26 @@ namespace CharacterControls.Movements.Modules
         public float SafetyCapsuleRadius = 0.2f;
 
         [SerializeField]
-        public CharacterJumpModule JumpModule = null;
-
-        [SerializeField]
         public UnityEvent OnPullUp = default;
 
         private bool _jumpInput;
         private List<IDisposable> _stopRequests = new List<IDisposable>();
         private float _stopElapsedTime;
+        private List<CharacterJumpModule> _jumpModuleBuffer = new List<CharacterJumpModule>();
 
         public Vector3 MoveDirection { get; private set; }
 
+        private void Start()
+        {
+            var characterMoveController = GetComponentInParent<CharacterMoveController>();
+            characterMoveController?.RegisterModule(this);
+        }
+
         private void OnDestroy()
         {
+            var characterMoveController = GetComponentInParent<CharacterMoveController>();
+            characterMoveController?.UnregisterModule(this);
+
             foreach (var request in _stopRequests)
             {
                 request?.Dispose();
@@ -107,9 +114,10 @@ namespace CharacterControls.Movements.Modules
                     var accVelocity = payload.Controller.Rigidbody.GetAccumulatedForce() / rig.mass * Time.fixedDeltaTime;
                     rig.AddForce(-rig.velocity - accVelocity, ForceMode.VelocityChange);
                     _stopRequests.Add(payload.Controller.RequestStopMove());
-                    if (JumpModule != null)
+                    payload.Controller.GetModules(_jumpModuleBuffer);
+                    for (int j = 0; j < _jumpModuleBuffer.Count; j++)
                     {
-                        _stopRequests.Add(JumpModule.RequestStopJump());
+                        _stopRequests.Add(_jumpModuleBuffer[j].RequestStopJump());
                     }
                     _stopElapsedTime = 0f;
                     OnPullUp?.Invoke();

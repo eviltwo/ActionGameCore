@@ -28,8 +28,17 @@ namespace CharacterControls.Movements.Modules
         private IDisposable _skipGroundCheckRequest;
         private ModuleRequestManager _stopJumpRequestManager = new ModuleRequestManager();
 
-        private void OnDisable()
+        private void Start()
         {
+            var characterMoveController = GetComponentInParent<CharacterMoveController>();
+            characterMoveController?.RegisterModule(this);
+        }
+
+        private void OnDestroy()
+        {
+            var characterMoveController = GetComponentInParent<CharacterMoveController>();
+            characterMoveController?.UnregisterModule(this);
+
             _skipGroundCheckRequest?.Dispose();
             _skipGroundCheckRequest = null;
         }

@@ -80,14 +80,6 @@ namespace CharacterControls.Movements
                 _capsuleCollider.height = newHeight;
                 _capsuleCollider.center = newCenter;
             }
-
-            CollectModules();
-        }
-
-        public void CollectModules()
-        {
-            _modules.Clear();
-            GetComponents(_modules);
         }
 
         public void OnReceiveInput(string key, Vector2 value)
@@ -201,10 +193,28 @@ namespace CharacterControls.Movements
             return Vector3.ProjectOnPlane(forward, transform.up).normalized;
         }
 
-        private void OnDrawGizmosSelected()
+        public void RegisterModule(ICharacterMoveModule module)
         {
-            Gizmos.color = Color.red;
-            Gizmos.DrawLine(transform.position, transform.position + transform.up * StepHeightMax);
+            _modules.Add(module);
+        }
+
+        public void UnregisterModule(ICharacterMoveModule module)
+        {
+            _modules.Remove(module);
+        }
+
+        public void GetModules<T>(List<T> results)
+            where T : ICharacterMoveModule
+        {
+            results.Clear();
+            var count = _modules.Count;
+            for (var i = 0; i < count; i++)
+            {
+                if (_modules[i] is T module)
+                {
+                    results.Add(module);
+                }
+            }
         }
 
         public IDisposable RequestSkipGroundCheck()
