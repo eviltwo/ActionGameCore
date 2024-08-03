@@ -50,6 +50,10 @@ namespace CharacterControls.Movements
 
         public bool IsGrounded { get; private set; }
 
+        public Vector3 TargetVelocity { get; private set; }
+
+        public Vector3 RelativeVelocityToGround { get; private set; }
+
         private void Reset()
         {
             Rigidbody = GetComponent<Rigidbody>();
@@ -124,13 +128,13 @@ namespace CharacterControls.Movements
                 // Move horizontal
                 var forward = GetForwardOfMovementSpace();
                 var right = Vector3.Cross(transform.up, forward);
-                var targetVelocity = (forward * _moveInput.y + right * _moveInput.x) * WalkSpeed;
-                var relativeVelocity = Rigidbody.velocity;
+                TargetVelocity = (forward * _moveInput.y + right * _moveInput.x) * WalkSpeed;
+                RelativeVelocityToGround = Rigidbody.velocity;
                 if (hitInfo.rigidbody != null)
                 {
-                    relativeVelocity -= hitInfo.rigidbody.GetPointVelocity(hitInfo.point);
+                    RelativeVelocityToGround -= hitInfo.rigidbody.GetPointVelocity(hitInfo.point);
                 }
-                var diffVelocity = targetVelocity - relativeVelocity;
+                var diffVelocity = TargetVelocity - RelativeVelocityToGround;
                 diffVelocity.y = 0;
                 _frictionCalculator.StaticFriction = StaticFriction;
                 _frictionCalculator.DynamicFriction = DynamicFriction;
@@ -143,8 +147,9 @@ namespace CharacterControls.Movements
             {
                 var forward = GetForwardOfMovementSpace();
                 var right = Vector3.Cross(transform.up, forward);
-                var targetVelocity = (forward * _moveInput.y + right * _moveInput.x) * AirWalkSpeed;
-                var addVelocity = targetVelocity - (Rigidbody.velocity - Vector3.Project(Rigidbody.velocity, transform.up));
+                TargetVelocity = (forward * _moveInput.y + right * _moveInput.x) * AirWalkSpeed;
+                RelativeVelocityToGround = Rigidbody.velocity;
+                var addVelocity = TargetVelocity - (Rigidbody.velocity - Vector3.Project(Rigidbody.velocity, transform.up));
                 Rigidbody.AddForce(addVelocity, ForceMode.Acceleration);
             }
 
