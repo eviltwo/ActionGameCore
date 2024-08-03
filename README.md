@@ -14,13 +14,13 @@
 - 入力処理はInputSystemに対応しています。
 
 # パッケージ一覧 (UPMでインポートできます)
-### CharacterControls v0.9.0
+### CharacterControls v0.10.0
 キャラクターの歩行・ジャンプ。
 ```
 https://github.com/eviltwo/ActionGameCore.git?path=src/ActionGameCore/Assets/CharacterControls
 ```
 
-### CameraControls v1.6.0
+### CameraControls v1.6.3
 FPSとTPS視点のカメラ。
 ```
 https://github.com/eviltwo/ActionGameCore.git?path=src/ActionGameCore/Assets/CameraControls
