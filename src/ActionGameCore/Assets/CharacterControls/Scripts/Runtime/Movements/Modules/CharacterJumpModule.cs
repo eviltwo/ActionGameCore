@@ -57,7 +57,8 @@ namespace CharacterControls.Movements.Modules
             if (virtualGrounded && _jumpInput && Time.time - _jumpInputTime < BufferedInputDuration)
             {
                 var rig = payload.Controller.Rigidbody;
-                var verticalSpeed = Vector3.Dot(rig.velocity, transform.up);
+                var accVelocity = rig.GetAccumulatedForce() / rig.mass * Time.fixedDeltaTime;
+                var verticalSpeed = Vector3.Dot(rig.velocity + accVelocity, transform.up);
                 verticalSpeed = Mathf.Min(verticalSpeed, 0);
                 rig.AddForce(transform.up * (JumpSpeed - verticalSpeed), ForceMode.VelocityChange);
                 _jumpElapsedTime = 0;
