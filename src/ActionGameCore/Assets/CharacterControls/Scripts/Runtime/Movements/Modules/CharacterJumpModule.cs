@@ -80,9 +80,9 @@ namespace CharacterControls.Movements.Modules
             {
                 var rig = payload.Controller.Rigidbody;
                 var accVelocity = rig.GetAccumulatedForce() / rig.mass * Time.fixedDeltaTime;
-                var verticalSpeed = Vector3.Dot(rig.velocity + accVelocity, transform.up);
+                var verticalSpeed = Vector3.Dot(rig.velocity + accVelocity, payload.Root.up);
                 verticalSpeed = Mathf.Min(verticalSpeed, 0);
-                rig.AddForce(transform.up * (JumpSpeed - verticalSpeed), ForceMode.VelocityChange);
+                rig.AddForce(payload.Root.up * (JumpSpeed - verticalSpeed), ForceMode.VelocityChange);
                 _jumpElapsedTime = 0;
                 _groundElapsedTime = float.MaxValue;
                 _skipGroundCheckRequest = payload.Controller.RequestSkipGroundCheck();

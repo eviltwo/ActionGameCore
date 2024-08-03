@@ -165,7 +165,7 @@ namespace CharacterControls.Movements
                 }
             }
 
-            var modulePayload = new CharacterMoveModulePayload(this);
+            var modulePayload = new CharacterMoveModulePayload(this, transform);
             var count = _modules.Count;
             for (var i = 0; i < count; i++)
             {

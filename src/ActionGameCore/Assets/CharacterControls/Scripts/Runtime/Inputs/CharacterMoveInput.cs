@@ -33,9 +33,9 @@ namespace CharacterControls.Inputs
         private void Update()
         {
             _vector2Receivers.Clear();
-            GetComponents(_vector2Receivers);
+            GetComponentsInChildren(_vector2Receivers);
             _floatReceivers.Clear();
-            GetComponents(_floatReceivers);
+            GetComponentsInChildren(_floatReceivers);
         }
 
         private void OnActionTriggerd(InputAction.CallbackContext context)

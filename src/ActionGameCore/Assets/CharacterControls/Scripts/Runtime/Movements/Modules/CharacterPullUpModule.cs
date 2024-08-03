@@ -88,7 +88,7 @@ namespace CharacterControls.Movements.Modules
             }
 
             var velocity = payload.Controller.TargetVelocity;
-            var verticalVelocity = Vector3.Project(velocity, transform.up);
+            var verticalVelocity = Vector3.Project(velocity, payload.Root.up);
             var direction = (velocity - verticalVelocity).normalized;
             if (direction.sqrMagnitude > 0f)
             {
@@ -104,10 +104,10 @@ namespace CharacterControls.Movements.Modules
             for (var i = 0; i < checkCount; i++)
             {
                 var distance = CheckDistances[i];
-                var ray = new Ray(transform.position + MoveDirection * distance + transform.up * (MaxHeight + CheckRadius), -transform.up);
+                var ray = new Ray(payload.Root.position + MoveDirection * distance + payload.Root.up * (MaxHeight + CheckRadius), -payload.Root.up);
                 if (Physics.SphereCast(ray, CheckRadius, out var hitInfo, MaxHeight - MinHeight, payload.Controller.GroundLayer)
                     && Vector3.Angle(hitInfo.normal, Vector3.up) < SlopeLimit
-                    && !Physics.CheckCapsule(hitInfo.point + transform.up * SafetyCapsuleStart, hitInfo.point + transform.up * SafetyCapsuleEnd, SafetyCapsuleRadius, payload.Controller.GroundLayer))
+                    && !Physics.CheckCapsule(hitInfo.point + payload.Root.up * SafetyCapsuleStart, hitInfo.point + payload.Root.up * SafetyCapsuleEnd, SafetyCapsuleRadius, payload.Controller.GroundLayer))
                 {
                     var rig = payload.Controller.Rigidbody;
                     rig.MovePosition(hitInfo.point);
