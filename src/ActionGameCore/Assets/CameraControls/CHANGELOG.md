@@ -1,5 +1,9 @@
 # Changelog
 
+## [1.6.3] - 2024-08-04
+### Added
+- Added TPS camera effector for character movement.
+
 ## [1.6.2] - 2024-07-11
 ### Changed
 - Change camera rotation speed according to time scale.

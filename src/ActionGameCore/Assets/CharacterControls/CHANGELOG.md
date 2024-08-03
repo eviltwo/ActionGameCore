@@ -1,5 +1,12 @@
 # Changelog
 
+## [0.10.0] - 2024-08-04
+### Changed
+- The character's movement process has been subdivided into the Module class.
+### Added
+- Added Pull up module.
+- Added character animator controller for each modules. 
+
 ## [0.9.0] - 2024-07-07
 ### Changed
 - Changed to use PlayerInput component
