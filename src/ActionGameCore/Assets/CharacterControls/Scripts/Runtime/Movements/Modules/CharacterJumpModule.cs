@@ -1,5 +1,6 @@
 using System;
 using UnityEngine;
+using UnityEngine.Events;
 
 namespace CharacterControls.Movements.Modules
 {
@@ -16,6 +17,9 @@ namespace CharacterControls.Movements.Modules
 
         [SerializeField]
         public float SkipGroundCheckTime = 0.1f;
+
+        [SerializeField]
+        public UnityEvent OnJump = default;
 
         private bool _jumpInput;
         private float _jumpInputTime;
@@ -59,6 +63,7 @@ namespace CharacterControls.Movements.Modules
                 _jumpElapsedTime = 0;
                 _groundElapsedTime = float.MaxValue;
                 _skipGroundCheckRequest = payload.Controller.RequestSkipGroundCheck();
+                OnJump?.Invoke();
             }
 
             _jumpElapsedTime += Time.fixedDeltaTime;
