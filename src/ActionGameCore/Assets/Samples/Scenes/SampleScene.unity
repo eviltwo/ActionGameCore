@@ -2370,7 +2370,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   ModelRoot: {fileID: 1314562539}
   Animator: {fileID: 1314562540}
-  Module: {fileID: 0}
+  Module: {fileID: 1919363448}
   PullUpAnimatorParameterTrigger: OnPullUp
 --- !u!1 &1318817720
 GameObject:
