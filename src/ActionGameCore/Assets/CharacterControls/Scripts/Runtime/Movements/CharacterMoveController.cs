@@ -103,25 +103,27 @@ namespace CharacterControls.Movements
                 return;
             }
 
-            const float DistanceMergin = 0.2f;
+            const float DistanceTopMergin = 0.2f;
+            const float DistanceMergin = 0.3f;
             const float Radius = 0.1f;
-            var legRay = new Ray(transform.position + transform.up * (StepHeightMax + Radius), -transform.up);
+            var legRay = new Ray(transform.position + transform.up * (StepHeightMax + Radius + DistanceTopMergin), -transform.up);
             RaycastHit hitInfo = default;
-            IsGrounded = !_skipGroundCheckRequestManager.HasRequest() && Physics.SphereCast(legRay, Radius, out hitInfo, StepHeightMax + DistanceMergin);
+            IsGrounded = !_skipGroundCheckRequestManager.HasRequest() && Physics.SphereCast(legRay, Radius, out hitInfo, StepHeightMax + DistanceTopMergin + DistanceMergin);
             if (IsGrounded)
             {
                 // Leg spring
-                var springRatio = Mathf.Clamp01(hitInfo.distance / StepHeightMax);
-                var springPushForce = (1 - springRatio) * LegStrength;
+                var springLength = hitInfo.distance - DistanceTopMergin;
+                var springRatio = Mathf.Clamp01(springLength / StepHeightMax);
+                var springPushForce = (1f - springRatio) * LegStrength;
                 Rigidbody.AddForce(springPushForce * transform.up, ForceMode.Acceleration);
 
                 // Leg suspension
                 var currentVelocity = Rigidbody.velocity;
                 if (hitInfo.rigidbody != null)
                 {
-                    currentVelocity -= hitInfo.rigidbody.velocity;
+                    currentVelocity -= hitInfo.rigidbody.GetPointVelocity(hitInfo.point);
                 }
-                var suspensionForce = Vector3.Project(currentVelocity, transform.up) * -LegSuspenion;
+                var suspensionForce = Vector3.Project(currentVelocity, transform.up) * -LegSuspenion * (1f - springRatio);
                 Rigidbody.AddForce(suspensionForce, ForceMode.Acceleration);
 
                 // Move horizontal

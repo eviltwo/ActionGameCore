@@ -229,7 +229,7 @@ MonoBehaviour:
   _autoResizeCapsuleCollider: 1
   _capsuleCollider: {fileID: 177208274}
   LegStrength: 30
-  LegSuspenion: 8
+  LegSuspenion: 40
   WalkSpeed: 5
   FrictionStrength: 30
   StaticFriction: 0.1
