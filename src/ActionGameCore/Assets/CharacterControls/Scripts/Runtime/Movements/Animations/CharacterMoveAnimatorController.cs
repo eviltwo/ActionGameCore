@@ -95,25 +95,32 @@ namespace CharacterControls.Movements.Animations
         {
             const float raycastDistance = 0.4f;
             const float footAngleLimit = 180.0f;
+            const float toesLength = 0.3f;
+
             var footPos = Animator.GetIKPosition(ikGoal);
             var footRot = Animator.GetIKRotation(ikGoal);
-            var ray = new Ray(footPos + footRot * Vector3.up * raycastDistance, footRot * Vector3.down);
-            if (Physics.Raycast(ray, out var hitInfo, raycastDistance + bottomHeight)
-                && !IgnoreCollidersForIK.Contains(hitInfo.collider))
-            {
-                var modfiedFootRot = Quaternion.FromToRotation(footRot * Vector3.up, hitInfo.normal) * footRot;
-                var angleDiff = Quaternion.Angle(footRot, modfiedFootRot);
-                var rotW = 1 - Mathf.InverseLerp(0, footAngleLimit, angleDiff);
-                Animator.SetIKRotationWeight(ikGoal, rotW);
-                Animator.SetIKRotation(ikGoal, modfiedFootRot);
+            var toesPos = footPos + footRot * Vector3.forward * toesLength;
 
-                Animator.SetIKPositionWeight(ikGoal, 1);
-                Animator.SetIKPosition(ikGoal, hitInfo.point + hitInfo.normal * bottomHeight);
-            }
-            else
+            var footRay = new Ray(footPos + footRot * Vector3.up * raycastDistance, footRot * Vector3.down);
+            var toesRay = new Ray(footPos, footRot * Vector3.forward);
+            if (Physics.Raycast(footRay, out var footHitInfo, raycastDistance + bottomHeight) && !IgnoreCollidersForIK.Contains(footHitInfo.collider))
             {
-                Animator.SetIKPositionWeight(ikGoal, 0);
-                Animator.SetIKRotationWeight(ikGoal, 0);
+                var footIKPos = footHitInfo.point + footHitInfo.normal * bottomHeight;
+                var toesHeight = Vector3.Dot(toesPos - footIKPos, footHitInfo.normal);
+                var toesIKPos = toesHeight > 0 ? toesPos : toesPos + footHitInfo.normal * -toesHeight;
+                Animator.SetIKPositionWeight(ikGoal, 1);
+                Animator.SetIKPosition(ikGoal, footIKPos);
+                var footIKRot = Quaternion.FromToRotation(footRot * Vector3.forward, (toesIKPos - footIKPos).normalized) * footRot;
+                Animator.SetIKRotationWeight(ikGoal, 1);
+                Animator.SetIKRotation(ikGoal, footIKRot);
+            }
+            else if (Physics.Raycast(toesRay, out var toesHitInfo, toesLength) && !IgnoreCollidersForIK.Contains(toesHitInfo.collider))
+            {
+                var toesHeight = Vector3.Dot(toesPos - toesHitInfo.point, toesHitInfo.normal);
+                var toesIKPos = toesHeight > 0 ? toesPos : toesPos + toesHitInfo.normal * -toesHeight;
+                var footIKRot = Quaternion.FromToRotation(footRot * Vector3.forward, (toesIKPos - footPos).normalized) * footRot;
+                Animator.SetIKRotationWeight(ikGoal, 1);
+                Animator.SetIKRotation(ikGoal, footIKRot);
             }
         }
     }
