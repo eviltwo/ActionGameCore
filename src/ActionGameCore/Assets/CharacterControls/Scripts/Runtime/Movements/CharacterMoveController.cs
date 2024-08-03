@@ -115,8 +115,6 @@ namespace CharacterControls.Movements
                 var springPushForce = (1 - springRatio) * LegStrength;
                 Rigidbody.AddForce(springPushForce * transform.up, ForceMode.Acceleration);
 
-                Debug.Log($"hitDisntace: {hitInfo.distance}, springRatio: {springRatio}");
-
                 // Leg suspension
                 var currentVelocity = Rigidbody.velocity;
                 if (hitInfo.rigidbody != null)
@@ -138,7 +136,6 @@ namespace CharacterControls.Movements
                 }
                 var diffVelocity = TargetVelocity - RelativeVelocityToGround;
                 diffVelocity -= Vector3.Project(diffVelocity, hitInfo.normal); // Remove velocity on normal
-                Debug.DrawLine(transform.position, transform.position + TargetVelocity, Color.red);
                 _frictionCalculator.StaticFriction = StaticFriction;
                 _frictionCalculator.DynamicFriction = DynamicFriction;
                 _frictionCalculator.Strength = FrictionStrength;
