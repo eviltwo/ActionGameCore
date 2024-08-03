@@ -87,25 +87,25 @@ namespace CharacterControls.Movements.Animations
 
         private void OnAnimatorIK()
         {
-            UpdateFootIK(HumanBodyBones.LeftFoot, AvatarIKGoal.LeftFoot, Animator.leftFeetBottomHeight);
-            UpdateFootIK(HumanBodyBones.RightFoot, AvatarIKGoal.RightFoot, Animator.rightFeetBottomHeight);
+            UpdateFootIK(AvatarIKGoal.LeftFoot, Animator.leftFeetBottomHeight);
+            UpdateFootIK(AvatarIKGoal.RightFoot, Animator.rightFeetBottomHeight);
         }
 
-        private void UpdateFootIK(HumanBodyBones bone, AvatarIKGoal ikGoal, float bottomHeight)
+        private void UpdateFootIK(AvatarIKGoal ikGoal, float bottomHeight)
         {
-            const float raycastBeforeDistance = 0.4f;
+            const float raycastDistance = 0.4f;
             const float footAngleLimit = 180.0f;
-            var foot = Animator.GetBoneTransform(bone);
-            var footWorldRot = Animator.GetIKRotation(ikGoal);
-            var ray = new Ray(foot.position + footWorldRot * Vector3.up * raycastBeforeDistance, footWorldRot * Vector3.down);
-            if (Physics.Raycast(ray, out var hitInfo, raycastBeforeDistance + bottomHeight)
+            var footPos = Animator.GetIKPosition(ikGoal);
+            var footRot = Animator.GetIKRotation(ikGoal);
+            var ray = new Ray(footPos + footRot * Vector3.up * raycastDistance, footRot * Vector3.down);
+            if (Physics.Raycast(ray, out var hitInfo, raycastDistance + bottomHeight)
                 && !IgnoreCollidersForIK.Contains(hitInfo.collider))
             {
-                var diffRot = Quaternion.FromToRotation(-foot.up, hitInfo.normal);
-                var angleDiff = Quaternion.Angle(footWorldRot, diffRot * footWorldRot);
+                var modfiedFootRot = Quaternion.FromToRotation(footRot * Vector3.up, hitInfo.normal) * footRot;
+                var angleDiff = Quaternion.Angle(footRot, modfiedFootRot);
                 var rotW = 1 - Mathf.InverseLerp(0, footAngleLimit, angleDiff);
                 Animator.SetIKRotationWeight(ikGoal, rotW);
-                Animator.SetIKRotation(ikGoal, diffRot * footWorldRot);
+                Animator.SetIKRotation(ikGoal, modfiedFootRot);
 
                 Animator.SetIKPositionWeight(ikGoal, 1);
                 Animator.SetIKPosition(ikGoal, hitInfo.point + hitInfo.normal * bottomHeight);
