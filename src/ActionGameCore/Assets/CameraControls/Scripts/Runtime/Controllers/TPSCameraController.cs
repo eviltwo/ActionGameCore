@@ -38,9 +38,6 @@ namespace CameraControls.Controllers
         public LayerMask WallLayerMask = ~0;
 
         [SerializeField]
-        public int SmoothingFrameCount = 2;
-
-        [SerializeField]
         private bool _lockAndHideCursor = true;
 
         private Vector2 _deltaAngles;

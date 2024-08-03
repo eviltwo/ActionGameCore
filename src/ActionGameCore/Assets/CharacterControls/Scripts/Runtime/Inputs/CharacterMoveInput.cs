@@ -1,4 +1,5 @@
 #if ENABLE_INPUT_SYSTEM
+using System.Collections.Generic;
 using CharacterControls.Movements;
 using UnityEngine;
 using UnityEngine.InputSystem;
@@ -16,17 +17,25 @@ namespace CharacterControls.Inputs
         [SerializeField]
         private InputActionReference _jumpActionReference = null;
 
-        public IMoveController MoveController { get; set; }
+        public List<IInputReceiver<Vector2>> _vector2Receivers = new List<IInputReceiver<Vector2>>();
+        public List<IInputReceiver<float>> _floatReceivers = new List<IInputReceiver<float>>();
 
         private void Start()
         {
-            MoveController = GetComponent<IMoveController>();
             PlayerInput.onActionTriggered += OnActionTriggerd;
         }
 
         private void OnDestroy()
         {
             PlayerInput.onActionTriggered -= OnActionTriggerd;
+        }
+
+        private void Update()
+        {
+            _vector2Receivers.Clear();
+            GetComponentsInChildren(_vector2Receivers);
+            _floatReceivers.Clear();
+            GetComponentsInChildren(_floatReceivers);
         }
 
         private void OnActionTriggerd(InputAction.CallbackContext context)
@@ -45,14 +54,19 @@ namespace CharacterControls.Inputs
         private void OnMove(InputAction.CallbackContext context)
         {
             var value = context.ReadValue<Vector2>();
-            MoveController.SetMoveInput(value);
+            var count = _vector2Receivers.Count;
+            for (var i = 0; i < count; i++)
+            {
+                _vector2Receivers[i].OnReceiveInput("Move", value);
+            }
         }
 
         private void OnJump(InputAction.CallbackContext context)
         {
-            if (context.performed && context.startTime > Time.realtimeSinceStartup - 0.5f)
+            var count = _floatReceivers.Count;
+            for (var i = 0; i < count; i++)
             {
-                MoveController.SetJumpInput(1);
+                _floatReceivers[i].OnReceiveInput("Jump", context.performed ? 1f : 0f);
             }
         }
     }
