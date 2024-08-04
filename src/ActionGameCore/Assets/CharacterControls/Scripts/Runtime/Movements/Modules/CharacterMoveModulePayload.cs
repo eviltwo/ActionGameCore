@@ -4,12 +4,15 @@ namespace CharacterControls.Movements.Modules
 {
     public struct CharacterMoveModulePayload
     {
-        public readonly CharacterMoveController Controller;
         public readonly Transform Root;
-        public CharacterMoveModulePayload(CharacterMoveController controller, Transform root)
+        public readonly Rigidbody Rigidbody;
+        public readonly CharacterMoveController Controller;
+
+        public CharacterMoveModulePayload(Transform root, Rigidbody rb, CharacterMoveController controller)
         {
-            Controller = controller;
             Root = root;
+            Rigidbody = rb;
+            Controller = controller;
         }
     }
 }

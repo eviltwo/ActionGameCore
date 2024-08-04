@@ -102,70 +102,36 @@ namespace CharacterControls.Movements
                 return;
             }
 
-            const float DistanceTopMergin = 0.2f;
-            const float DistanceMergin = 0.3f;
+            const int CheckCount = 8;
             const float Radius = 0.1f;
-            var legRay = new Ray(transform.position + transform.up * (StepHeightMax + Radius + DistanceTopMergin), -transform.up);
-            RaycastHit hitInfo = default;
+            const float Margin = 0.1f;
+            RaycastHit hit = default;
+            var ray = new Ray(transform.position + transform.up * (StepHeightMax + Margin), -transform.up);
+            var distance = StepHeightMax * 2 + Margin;
             IsGrounded = !_skipGroundCheckRequestManager.HasRequest()
-                && Physics.SphereCast(legRay, Radius, out hitInfo, StepHeightMax + DistanceTopMergin + DistanceMergin, GroundLayer)
-                && Vector3.Angle(hitInfo.normal, Vector3.up) < SlopeLimit;
-            if (_stopMoveRequestManager.HasRequest())
+                && CharacterMoveUtility.CheckGroundSafety(ray, Radius, CheckCount, distance, SlopeLimit, out hit, GroundLayer)
+                && hit.distance < StepHeightMax * 2 + Margin;
+
+            if (IsGrounded)
             {
-                TargetVelocity = Vector3.zero;
-                RelativeVelocityToGround = Vector3.zero;
+                CalculateFootSpring(hit);
             }
-            else
+
+            TargetVelocity = Vector3.zero;
+            RelativeVelocityToGround = Vector3.zero;
+            if (!_stopMoveRequestManager.HasRequest())
             {
                 if (IsGrounded)
                 {
-                    // Leg spring
-                    var springLength = hitInfo.distance - DistanceTopMergin;
-                    var springRatio = Mathf.Clamp01(springLength / StepHeightMax);
-                    var springPushForce = (1f - springRatio) * LegStrength;
-                    Rigidbody.AddForce(springPushForce * transform.up, ForceMode.Acceleration);
-
-                    // Leg suspension
-                    var currentVelocity = Rigidbody.velocity;
-                    if (hitInfo.rigidbody != null)
-                    {
-                        currentVelocity -= hitInfo.rigidbody.GetPointVelocity(hitInfo.point);
-                    }
-                    var suspensionForce = Vector3.Project(currentVelocity, transform.up) * -LegSuspenion * (1f - springRatio);
-                    Rigidbody.AddForce(suspensionForce, ForceMode.Acceleration);
-
-                    // Move horizontal
-                    var forward = GetForwardOfMovementSpace();
-                    var right = Vector3.Cross(transform.up, forward);
-                    var inputBaseVelocity = (forward * _moveInput.y + right * _moveInput.x) * WalkSpeed;
-                    TargetVelocity = Quaternion.FromToRotation(transform.up, hitInfo.normal) * inputBaseVelocity;
-                    Debug.DrawRay(transform.position, TargetVelocity, Color.red);
-                    RelativeVelocityToGround = Rigidbody.velocity;
-                    if (hitInfo.rigidbody != null)
-                    {
-                        RelativeVelocityToGround -= hitInfo.rigidbody.GetPointVelocity(hitInfo.point);
-                    }
-                    var diffVelocity = TargetVelocity - RelativeVelocityToGround;
-                    diffVelocity -= Vector3.Project(diffVelocity, transform.up); // Remove velocity on normal
-                    _frictionCalculator.StaticFriction = StaticFriction;
-                    _frictionCalculator.DynamicFriction = DynamicFriction;
-                    _frictionCalculator.Strength = FrictionStrength;
-                    _frictionCalculator.Calculate(-diffVelocity);
-                    var addVelocity = _frictionCalculator.FrictionForce;
-                    Rigidbody.AddForce(addVelocity, ForceMode.Acceleration);
+                    Walk(hit);
                 }
                 else
                 {
-                    var forward = GetForwardOfMovementSpace();
-                    var right = Vector3.Cross(transform.up, forward);
-                    TargetVelocity = (forward * _moveInput.y + right * _moveInput.x) * AirWalkSpeed;
-                    RelativeVelocityToGround = Rigidbody.velocity;
-                    var addVelocity = TargetVelocity - (Rigidbody.velocity - Vector3.Project(Rigidbody.velocity, transform.up));
-                    Rigidbody.AddForce(addVelocity, ForceMode.Acceleration);
+                    WalkAir();
                 }
             }
 
-            var modulePayload = new CharacterMoveModulePayload(this, transform);
+            var modulePayload = new CharacterMoveModulePayload(transform, Rigidbody, this);
             var count = _modules.Count;
             for (var i = 0; i < count; i++)
             {
@@ -173,24 +139,53 @@ namespace CharacterControls.Movements
             }
         }
 
-        private Vector3 GetForwardOfMovementSpace()
+        private void CalculateFootSpring(RaycastHit hit)
         {
-            if (CameraTransform == null)
-            {
-                return transform.forward;
-            }
+            // Leg spring
+            var springLength = hit.distance;
+            var springRatio = Mathf.Clamp01(springLength / StepHeightMax);
+            var springPushForce = (1f - springRatio) * LegStrength;
+            Rigidbody.AddForce(springPushForce * transform.up, ForceMode.Acceleration);
 
-            var forward = CameraTransform.forward;
-            if (forward == transform.up)
+            // Leg suspension
+            var currentVelocity = Rigidbody.velocity;
+            if (hit.rigidbody != null)
             {
-                forward = -CameraTransform.up;
+                currentVelocity -= hit.rigidbody.GetPointVelocity(hit.point);
             }
-            else if (forward == -transform.up)
-            {
-                forward = CameraTransform.up;
-            }
+            var suspensionForce = Vector3.Project(currentVelocity, transform.up) * -LegSuspenion * (1f - springRatio);
+            Rigidbody.AddForce(suspensionForce, ForceMode.Acceleration);
+        }
 
-            return Vector3.ProjectOnPlane(forward, transform.up).normalized;
+        private void Walk(RaycastHit hit)
+        {
+            var forward = CharacterMoveUtility.GetForwardMovementDirectionFromCamera(transform, CameraTransform);
+            var right = Vector3.Cross(transform.up, forward);
+            var inputBaseVelocity = (forward * _moveInput.y + right * _moveInput.x) * WalkSpeed;
+            TargetVelocity = Quaternion.FromToRotation(transform.up, hit.normal) * inputBaseVelocity;
+            RelativeVelocityToGround = Rigidbody.velocity;
+            if (hit.rigidbody != null)
+            {
+                RelativeVelocityToGround -= hit.rigidbody.GetPointVelocity(hit.point);
+            }
+            var diffVelocity = TargetVelocity - RelativeVelocityToGround;
+            diffVelocity -= Vector3.Project(diffVelocity, transform.up); // Remove velocity on normal
+            _frictionCalculator.StaticFriction = StaticFriction;
+            _frictionCalculator.DynamicFriction = DynamicFriction;
+            _frictionCalculator.Strength = FrictionStrength;
+            _frictionCalculator.Calculate(-diffVelocity);
+            var addVelocity = _frictionCalculator.FrictionForce;
+            Rigidbody.AddForce(addVelocity, ForceMode.Acceleration);
+        }
+
+        private void WalkAir()
+        {
+            var forward = CharacterMoveUtility.GetForwardMovementDirectionFromCamera(transform, CameraTransform);
+            var right = Vector3.Cross(transform.up, forward);
+            TargetVelocity = (forward * _moveInput.y + right * _moveInput.x) * AirWalkSpeed;
+            RelativeVelocityToGround = Rigidbody.velocity;
+            var addVelocity = TargetVelocity - (Rigidbody.velocity - Vector3.Project(Rigidbody.velocity, transform.up));
+            Rigidbody.AddForce(addVelocity, ForceMode.Acceleration);
         }
 
         public void RegisterModule(ICharacterMoveModule module)

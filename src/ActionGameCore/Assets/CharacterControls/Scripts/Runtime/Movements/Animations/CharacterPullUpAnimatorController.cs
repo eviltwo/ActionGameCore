@@ -44,6 +44,7 @@ namespace CharacterControls.Movements.Animations
         {
             ModelRoot.rotation = Quaternion.LookRotation(Module.MoveDirection, ModelRoot.up);
             Animator.SetTrigger(PullUpAnimatorParameterTrigger);
+            Animator.Update(0);
         }
     }
 }
