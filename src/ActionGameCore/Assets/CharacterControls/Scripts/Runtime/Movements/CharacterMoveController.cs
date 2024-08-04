@@ -49,6 +49,9 @@ namespace CharacterControls.Movements
         [SerializeField]
         public float AirWalkSpeed = 5.0f;
 
+        [SerializeField]
+        private bool _drawDebug = false;
+
         private Vector2 _moveInput;
         private FrictionCalculator _frictionCalculator = new FrictionCalculator();
         private ModuleRequestManager _skipGroundCheckRequestManager = new ModuleRequestManager();
@@ -93,6 +96,11 @@ namespace CharacterControls.Movements
 
                 _moveInput = value;
             }
+        }
+
+        private void Update()
+        {
+            CharacterMoveUtility.DrawDebug = _drawDebug;
         }
 
         private void FixedUpdate()
