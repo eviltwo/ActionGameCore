@@ -8,10 +8,13 @@ namespace CharacterControls.Movements.Modules
     public class CharacterPullUpModule : MonoBehaviour, ICharacterMoveModule
     {
         [SerializeField]
-        public float CheckDistance = 0.3f;
+        public float CheckDistanceStart = 0.3f;
 
         [SerializeField]
-        public float CheckRadius = 0.1f;
+        public float CheckDistanceEnd = 0.5f;
+
+        [SerializeField]
+        public int CheckCount = 4;
 
         [SerializeField]
         public float MaxHeight = 1.5f;
@@ -41,7 +44,7 @@ namespace CharacterControls.Movements.Modules
         private float _stopElapsedTime;
         private List<CharacterJumpModule> _jumpModuleBuffer = new List<CharacterJumpModule>();
 
-        public Vector3 MoveDirection { get; private set; }
+        public Vector3 LastMoveDirection { get; private set; }
 
         private void Start()
         {
@@ -82,21 +85,16 @@ namespace CharacterControls.Movements.Modules
 
             var velocity = payload.Controller.TargetVelocity;
             var verticalVelocity = Vector3.Project(velocity, payload.Root.up);
-            var direction = (velocity - verticalVelocity).normalized;
-            if (direction.sqrMagnitude > 0f)
-            {
-                MoveDirection = direction;
-            }
-
-            if (MoveDirection.sqrMagnitude == 0f)
+            var moveDirection = (velocity - verticalVelocity).normalized;
+            if (moveDirection.sqrMagnitude == 0f)
             {
                 return;
             }
 
-            var ray = new Ray(payload.Root.position + MoveDirection * CheckDistance + payload.Root.up * MaxHeight, -payload.Root.up);
+            var ray = new Ray(payload.Root.position + moveDirection * CheckDistanceStart + payload.Root.up * MaxHeight, -payload.Root.up);
+            var lineLength = CheckDistanceEnd - CheckDistanceStart;
             var verticalDistance = MaxHeight - MinHeight;
-            if (CharacterMoveUtility.CheckGroundSafety(ray, CheckRadius, 8, verticalDistance, SlopeLimit, out var hit, payload.Controller.GroundLayer)
-                && Vector3.Angle(hit.normal, Vector3.up) < SlopeLimit
+            if (CharacterMoveUtility.CheckLineGroundSafety(ray, verticalDistance, moveDirection, lineLength, CheckCount, SlopeLimit, out var hit, payload.Controller.GroundLayer)
                 && !Physics.CheckCapsule(hit.point + payload.Root.up * SafetyCapsuleStart, hit.point + payload.Root.up * SafetyCapsuleEnd, SafetyCapsuleRadius, payload.Controller.GroundLayer))
             {
                 var rig = payload.Controller.Rigidbody;
@@ -110,6 +108,7 @@ namespace CharacterControls.Movements.Modules
                 {
                     _stopRequests.Add(_jumpModuleBuffer[j].RequestStopJump());
                 }
+                LastMoveDirection = moveDirection;
                 _stopElapsedTime = 0f;
                 OnPullUp?.Invoke();
             }

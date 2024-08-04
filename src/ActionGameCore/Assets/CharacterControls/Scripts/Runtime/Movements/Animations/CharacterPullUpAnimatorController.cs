@@ -42,7 +42,7 @@ namespace CharacterControls.Movements.Animations
 
         private void OnPullUp()
         {
-            ModelRoot.rotation = Quaternion.LookRotation(Module.MoveDirection, ModelRoot.up);
+            ModelRoot.rotation = Quaternion.LookRotation(Module.LastMoveDirection, ModelRoot.up);
             Animator.SetTrigger(PullUpAnimatorParameterTrigger);
             Animator.Update(0);
         }
