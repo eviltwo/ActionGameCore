@@ -138,7 +138,7 @@ GameObject:
   - component: {fileID: 177208277}
   - component: {fileID: 177208276}
   - component: {fileID: 177208279}
-  m_Layer: 0
+  m_Layer: 6
   m_Name: Player
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -228,7 +228,7 @@ MonoBehaviour:
   CameraTransform: {fileID: 963194228}
   GroundLayer:
     serializedVersion: 2
-    m_Bits: 4294967295
+    m_Bits: 1
   StepHeightMax: 0.25
   SlopeLimit: 45
   _autoResizeCapsuleCollider: 1
@@ -10391,8 +10391,9 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 75cd293bc075aaa4bb074e1c95128899, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  CheckDistance: 0.31
-  CheckRadius: 0.1
+  CheckDistanceStart: 0.3
+  CheckDistanceEnd: 0.6
+  CheckCount: 8
   MaxHeight: 1.6
   MinHeight: 1
   SlopeLimit: 45

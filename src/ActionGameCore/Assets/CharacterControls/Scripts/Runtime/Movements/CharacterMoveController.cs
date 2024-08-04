@@ -123,7 +123,7 @@ namespace CharacterControls.Movements
             var ray = new Ray(transform.position + transform.up * (StepHeightMax + Margin), -transform.up);
             var distance = StepHeightMax * 2 + Margin;
             IsGrounded = !_skipGroundCheckRequestManager.HasRequest()
-                && CharacterMoveUtility.CheckGroundSafety(ray, Radius, CheckCount, distance, SlopeLimit, out hit, GroundLayer)
+                && CharacterMoveUtility.CheckCircleGroundSafety(ray, distance, Radius, CheckCount, SlopeLimit, out hit, GroundLayer)
                 && hit.distance < StepHeightMax * 2 + Margin;
 
             if (IsGrounded)

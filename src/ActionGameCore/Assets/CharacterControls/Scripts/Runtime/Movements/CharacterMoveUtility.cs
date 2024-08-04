@@ -10,7 +10,45 @@ namespace CharacterControls.Movements
 
         public static bool DrawDebug { get; set; } = false;
 
-        public static bool CheckGroundSafety(Ray ray, float radius, int resolution, float distance, float slopeLimit, out RaycastHit hit, LayerMask layerMask)
+        public static bool CheckLineGroundSafety(Ray ray, float rayDistance, Vector3 lineDirection, float lineDistance, int resolution, float slopeLimit, out RaycastHit hit, LayerMask layerMask)
+        {
+            _offsetBuffer.Clear();
+            for (int i = 0; i < resolution; i++)
+            {
+                var t = (float)i / (resolution - 1);
+                _offsetBuffer.Add(Vector3.Lerp(Vector3.zero, lineDirection * lineDistance, t));
+            }
+
+            for (int i = 0; i < _offsetBuffer.Count; i++)
+            {
+                var offset = _offsetBuffer[i];
+                var lineRay = new Ray(ray.origin + offset, ray.direction);
+                if (Physics.Raycast(lineRay, out var lineHit, rayDistance, layerMask))
+                {
+                    var validSlope = Vector3.Angle(lineHit.normal, Vector3.up) < slopeLimit;
+
+                    if (DrawDebug)
+                    {
+                        Debug.DrawLine(lineRay.origin, lineHit.point, validSlope ? Color.green : Color.red);
+                    }
+
+                    if (validSlope)
+                    {
+                        hit = lineHit;
+                        return true;
+                    }
+                }
+                else if (DrawDebug)
+                {
+                    Debug.DrawLine(lineRay.origin, lineRay.GetPoint(rayDistance), Color.yellow);
+                }
+            }
+
+            hit = default;
+            return false;
+        }
+
+        public static bool CheckCircleGroundSafety(Ray ray, float rayDistance, float radius, int resolution, float slopeLimit, out RaycastHit hit, LayerMask layerMask)
         {
             _offsetBuffer.Clear();
             _offsetBuffer.Add(Vector3.zero);
@@ -30,7 +68,7 @@ namespace CharacterControls.Movements
             {
                 var offset = _offsetBuffer[i];
                 var circleRay = new Ray(ray.origin + offset, ray.direction);
-                if (Physics.Raycast(circleRay, out var circleHit, distance, layerMask))
+                if (Physics.Raycast(circleRay, out var circleHit, rayDistance, layerMask))
                 {
                     var validSlope = Vector3.Angle(circleHit.normal, Vector3.up) < slopeLimit;
 
@@ -64,7 +102,7 @@ namespace CharacterControls.Movements
                 }
                 else if (DrawDebug)
                 {
-                    Debug.DrawLine(circleRay.origin, circleRay.GetPoint(distance), Color.yellow);
+                    Debug.DrawLine(circleRay.origin, circleRay.GetPoint(rayDistance), Color.yellow);
                 }
             }
 
