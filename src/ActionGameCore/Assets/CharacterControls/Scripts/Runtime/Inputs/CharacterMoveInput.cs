@@ -84,25 +84,6 @@ namespace CharacterControls.Inputs
                 }
             }
         }
-
-        private void OnMove(InputAction.CallbackContext context)
-        {
-            var value = context.ReadValue<Vector2>();
-            var count = _vector2Receivers.Count;
-            for (var i = 0; i < count; i++)
-            {
-                _vector2Receivers[i].OnReceiveInput("Move", value);
-            }
-        }
-
-        private void OnJump(InputAction.CallbackContext context)
-        {
-            var count = _floatReceivers.Count;
-            for (var i = 0; i < count; i++)
-            {
-                _floatReceivers[i].OnReceiveInput("Jump", context.performed ? 1f : 0f);
-            }
-        }
     }
 }
 #endif
