@@ -1,4 +1,5 @@
 #if ENABLE_INPUT_SYSTEM
+using System;
 using System.Collections.Generic;
 using CharacterControls.Movements;
 using UnityEngine;
@@ -8,20 +9,42 @@ namespace CharacterControls.Inputs
 {
     public class CharacterMoveInput : MonoBehaviour
     {
+        [Serializable]
+        private class InputActionKeyMap
+        {
+            public string CharacterActionKey = string.Empty;
+            public InputActionReference InputActionReference = null;
+        }
+
         [SerializeField]
         public PlayerInput PlayerInput = null;
 
         [SerializeField]
-        private InputActionReference _moveActionReference = null;
+        private InputActionKeyMap[] _floatActionKeyMaps = new InputActionKeyMap[]
+        {
+            new InputActionKeyMap
+            {
+                CharacterActionKey = "Jump",
+                InputActionReference = null,
+            }
+        };
 
         [SerializeField]
-        private InputActionReference _jumpActionReference = null;
+        private InputActionKeyMap[] _vector2ActionKeyMaps = new InputActionKeyMap[]
+        {
+            new InputActionKeyMap
+            {
+                CharacterActionKey = "Move",
+                InputActionReference = null,
+            }
+        };
 
-        public List<IInputReceiver<Vector2>> _vector2Receivers = new List<IInputReceiver<Vector2>>();
         public List<IInputReceiver<float>> _floatReceivers = new List<IInputReceiver<float>>();
+        public List<IInputReceiver<Vector2>> _vector2Receivers = new List<IInputReceiver<Vector2>>();
 
         private void Start()
         {
+            CollectReceivers();
             PlayerInput.onActionTriggered += OnActionTriggerd;
         }
 
@@ -30,7 +53,7 @@ namespace CharacterControls.Inputs
             PlayerInput.onActionTriggered -= OnActionTriggerd;
         }
 
-        private void Update()
+        public void CollectReceivers()
         {
             _vector2Receivers.Clear();
             GetComponentsInChildren(_vector2Receivers);
@@ -40,14 +63,25 @@ namespace CharacterControls.Inputs
 
         private void OnActionTriggerd(InputAction.CallbackContext context)
         {
-            if (_moveActionReference != null && context.action.name == _moveActionReference.action.name)
-            {
-                OnMove(context);
-            }
+            SendValue(context, _floatActionKeyMaps, _floatReceivers);
+            SendValue(context, _vector2ActionKeyMaps, _vector2Receivers);
+        }
 
-            if (_jumpActionReference != null && context.action.name == _jumpActionReference.action.name)
+        private void SendValue<T>(InputAction.CallbackContext context, InputActionKeyMap[] maps, List<IInputReceiver<T>> receivers)
+            where T : struct
+        {
+            var mapCount = maps.Length;
+            var receiverCount = receivers.Count;
+            for (int i = 0; i < mapCount; i++)
             {
-                OnJump(context);
+                var map = maps[i];
+                if (map.InputActionReference != null && context.action.name == map.InputActionReference.action.name)
+                {
+                    for (int j = 0; j < receiverCount; j++)
+                    {
+                        receivers[j].OnReceiveInput(map.CharacterActionKey, context.ReadValue<T>());
+                    }
+                }
             }
         }
 
