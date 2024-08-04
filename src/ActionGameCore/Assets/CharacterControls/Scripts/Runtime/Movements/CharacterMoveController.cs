@@ -114,7 +114,7 @@ namespace CharacterControls.Movements
 
             if (IsGrounded)
             {
-                CalculateFootSpring(hit);
+                CalculateFootSpring(hit, Margin);
             }
 
             TargetVelocity = Vector3.zero;
@@ -139,10 +139,10 @@ namespace CharacterControls.Movements
             }
         }
 
-        private void CalculateFootSpring(RaycastHit hit)
+        private void CalculateFootSpring(RaycastHit hit, float margin)
         {
             // Leg spring
-            var springLength = hit.distance;
+            var springLength = hit.distance - margin;
             var springRatio = Mathf.Clamp01(springLength / StepHeightMax);
             var springPushForce = (1f - springRatio) * LegStrength;
             Rigidbody.AddForce(springPushForce * transform.up, ForceMode.Acceleration);
@@ -153,7 +153,7 @@ namespace CharacterControls.Movements
             {
                 currentVelocity -= hit.rigidbody.GetPointVelocity(hit.point);
             }
-            var suspensionForce = Vector3.Project(currentVelocity, transform.up) * -LegSuspenion * (1f - springRatio);
+            var suspensionForce = Vector3.Project(currentVelocity, hit.normal) * -LegSuspenion * (1f - springRatio);
             Rigidbody.AddForce(suspensionForce, ForceMode.Acceleration);
         }
 
