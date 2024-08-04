@@ -22,6 +22,9 @@ namespace CharacterControls.Movements
             var isHit = false;
             var isValidGround = false;
             RaycastHit closestHit = default;
+            var lastPos = Vector3.zero;
+            var totalNormal = Vector3.zero;
+            var normalCount = 0;
             for (int i = 0; i < _offsetBuffer.Count; i++)
             {
                 var offset = _offsetBuffer[i];
@@ -29,6 +32,16 @@ namespace CharacterControls.Movements
                 if (Physics.Raycast(circleRay, out var circleHit, distance, layerMask))
                 {
                     var validSlope = Vector3.Angle(circleHit.normal, Vector3.up) < slopeLimit;
+                    if (!isHit)
+                    {
+                        lastPos = circleHit.point;
+                    }
+                    else
+                    {
+                        totalNormal += Quaternion.LookRotation(lastPos - circleHit.point) * Vector3.up;
+                        normalCount++;
+                        lastPos = circleHit.point;
+                    }
                     if (!isHit || (validSlope && circleHit.distance < closestHit.distance))
                     {
                         isHit = true;
@@ -47,6 +60,16 @@ namespace CharacterControls.Movements
             }
 
             hit = closestHit;
+            if (normalCount > 0)
+            {
+                hit.normal = totalNormal / normalCount;
+            }
+
+            if (DrawDebug)
+            {
+                Debug.DrawRay(hit.point, hit.normal, Color.blue);
+            }
+
             return isValidGround;
         }
 
