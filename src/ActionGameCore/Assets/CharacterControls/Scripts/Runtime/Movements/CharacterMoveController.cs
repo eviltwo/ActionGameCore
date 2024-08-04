@@ -103,13 +103,11 @@ namespace CharacterControls.Movements
             }
 
             const float DistanceTopMergin = 0.2f;
-            const float DistanceMergin = 0.3f;
-            const float Radius = 0.1f;
-            var legRay = new Ray(transform.position + transform.up * (StepHeightMax + Radius + DistanceTopMergin), -transform.up);
             RaycastHit hitInfo = default;
             IsGrounded = !_skipGroundCheckRequestManager.HasRequest()
-                && Physics.SphereCast(legRay, Radius, out hitInfo, StepHeightMax + DistanceTopMergin + DistanceMergin, GroundLayer)
-                && Vector3.Angle(hitInfo.normal, Vector3.up) < SlopeLimit;
+                && CheckGround(DistanceTopMergin, StepHeightMax, out hitInfo)
+                && hitInfo.distance - DistanceTopMergin < StepHeightMax * 2;
+
             if (_stopMoveRequestManager.HasRequest())
             {
                 TargetVelocity = Vector3.zero;
@@ -171,6 +169,42 @@ namespace CharacterControls.Movements
             {
                 _modules[i].FixedUpdateModule(modulePayload);
             }
+        }
+
+        private bool CheckGround(float topMargin, float bottomMargin, out RaycastHit hit)
+        {
+            const int CheckCount = 4;
+            const float Radius = 0.1f;
+
+            var isHit = false;
+            var isValidGround = false;
+            RaycastHit closestHitInfo = default;
+            for (int i = 0; i < CheckCount; i++)
+            {
+                var rad = 360f / CheckCount * i * Mathf.Deg2Rad;
+                var pointOnCircle = new Vector3(Mathf.Sin(rad), 0, Mathf.Cos(rad)) * Radius;
+                var ray = new Ray(transform.position + transform.up * (StepHeightMax + topMargin) + pointOnCircle, -transform.up);
+                var distance = StepHeightMax + topMargin + bottomMargin;
+                if (Physics.Raycast(ray, out var hitInfo, distance, GroundLayer))
+                {
+                    var validSlope = Vector3.Angle(hitInfo.normal, Vector3.up) < SlopeLimit;
+                    if (!isHit || (validSlope && hitInfo.distance < closestHitInfo.distance))
+                    {
+                        isHit = true;
+                        isValidGround = validSlope;
+                        closestHitInfo = hitInfo;
+                    }
+
+                    Debug.DrawLine(ray.origin, hitInfo.point, validSlope ? Color.green : Color.red);
+                }
+                else
+                {
+                    Debug.DrawLine(ray.origin, ray.GetPoint(distance), Color.yellow);
+                }
+            }
+
+            hit = closestHitInfo;
+            return isValidGround;
         }
 
         private Vector3 GetForwardOfMovementSpace()
