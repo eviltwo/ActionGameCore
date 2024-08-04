@@ -73,7 +73,9 @@ namespace CharacterControls.Movements.Modules
                 _stopRequests.Clear();
             }
 
-            if (payload.Controller.IsGrounded || _stopRequests.Count > 0)
+            if (payload.Controller.IsGrounded
+                || Vector3.Dot(payload.Rigidbody.velocity, payload.Root.up) > 0f
+                || _stopRequests.Count > 0)
             {
                 return;
             }
