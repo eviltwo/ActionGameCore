@@ -98,7 +98,8 @@ namespace CharacterControls.Movements.Modules
                 && !Physics.CheckCapsule(hit.point + payload.Root.up * SafetyCapsuleStart, hit.point + payload.Root.up * SafetyCapsuleEnd, SafetyCapsuleRadius, payload.Controller.GroundLayer))
             {
                 var rig = payload.Controller.Rigidbody;
-                rig.MovePosition(hit.point);
+                var edge = GetEdge(rig.position, hit.point, payload.Controller.GroundLayer);
+                rig.MovePosition(edge);
                 var accVelocity = payload.Controller.Rigidbody.GetAccumulatedForce() / rig.mass * Time.fixedDeltaTime;
                 rig.AddForce(-rig.velocity - accVelocity, ForceMode.VelocityChange);
                 _stopRequests.Add(payload.Controller.RequestStopMove());
@@ -110,6 +111,22 @@ namespace CharacterControls.Movements.Modules
                 _stopElapsedTime = 0f;
                 OnPullUp?.Invoke();
             }
+        }
+
+        private Vector3 GetEdge(Vector3 currentPosition, Vector3 targetGround, LayerMask layerMask)
+        {
+            const float heightOffset = 0.01f;
+            var toTarget = targetGround - currentPosition;
+            toTarget.y = 0;
+            var ray = new Ray(new Vector3(currentPosition.x, targetGround.y - heightOffset, currentPosition.z), toTarget.normalized);
+            var distance = toTarget.magnitude;
+            if (Physics.Raycast(ray, out var hit, distance, layerMask))
+            {
+                const float safetyOffset = 0.01f;
+                return new Vector3(hit.point.x, targetGround.y, hit.point.z) + toTarget.normalized * safetyOffset;
+            }
+
+            return targetGround;
         }
     }
 }
