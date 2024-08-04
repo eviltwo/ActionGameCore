@@ -29,16 +29,16 @@ namespace CharacterControls.Movements
         private CapsuleCollider _capsuleCollider = null;
 
         [SerializeField]
-        public float LegStrength = 40.0f;
+        public float LegStrength = 20.0f;
 
         [SerializeField]
-        public float LegSuspenion = 20.0f;
+        public float LegDamper = 40.0f;
 
         [SerializeField]
         public float WalkSpeed = 5.0f;
 
         [SerializeField]
-        public float FrictionStrength = 20;
+        public float FrictionStrength = 30;
 
         [SerializeField]
         public float StaticFriction = 0.1f;
@@ -47,7 +47,7 @@ namespace CharacterControls.Movements
         public float DynamicFriction = 1.0f;
 
         [SerializeField]
-        public float AirWalkSpeed = 2.0f;
+        public float AirWalkSpeed = 5.0f;
 
         private Vector2 _moveInput;
         private FrictionCalculator _frictionCalculator = new FrictionCalculator();
@@ -114,7 +114,7 @@ namespace CharacterControls.Movements
 
             if (IsGrounded)
             {
-                CalculateFootSpring(hit);
+                CalculateLegSpring(hit, Margin);
             }
 
             TargetVelocity = Vector3.zero;
@@ -139,22 +139,22 @@ namespace CharacterControls.Movements
             }
         }
 
-        private void CalculateFootSpring(RaycastHit hit)
+        private void CalculateLegSpring(RaycastHit hit, float margin)
         {
-            // Leg spring
-            var springLength = hit.distance;
+            // Spring
+            var springLength = hit.distance - margin;
             var springRatio = Mathf.Clamp01(springLength / StepHeightMax);
             var springPushForce = (1f - springRatio) * LegStrength;
             Rigidbody.AddForce(springPushForce * transform.up, ForceMode.Acceleration);
 
-            // Leg suspension
+            // Damper
             var currentVelocity = Rigidbody.velocity;
             if (hit.rigidbody != null)
             {
                 currentVelocity -= hit.rigidbody.GetPointVelocity(hit.point);
             }
-            var suspensionForce = Vector3.Project(currentVelocity, transform.up) * -LegSuspenion * (1f - springRatio);
-            Rigidbody.AddForce(suspensionForce, ForceMode.Acceleration);
+            var damperForce = Vector3.Project(currentVelocity, hit.normal) * -LegDamper * (1f - springRatio);
+            Rigidbody.AddForce(damperForce, ForceMode.Acceleration);
         }
 
         private void Walk(RaycastHit hit)
