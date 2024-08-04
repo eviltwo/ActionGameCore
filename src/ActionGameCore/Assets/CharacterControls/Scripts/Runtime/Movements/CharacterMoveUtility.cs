@@ -6,6 +6,7 @@ namespace CharacterControls.Movements
     public static class CharacterMoveUtility
     {
         private static List<Vector3> _offsetBuffer = new List<Vector3>();
+        private static List<Vector3> _pointBuffer = new List<Vector3>();
 
         public static bool DrawDebug { get; set; } = false;
 
@@ -22,6 +23,9 @@ namespace CharacterControls.Movements
             var isHit = false;
             var isValidGround = false;
             RaycastHit closestHit = default;
+            _pointBuffer.Clear();
+            var totalNormal = Vector3.zero;
+            var normalCount = 0;
             for (int i = 0; i < _offsetBuffer.Count; i++)
             {
                 var offset = _offsetBuffer[i];
@@ -29,6 +33,17 @@ namespace CharacterControls.Movements
                 if (Physics.Raycast(circleRay, out var circleHit, distance, layerMask))
                 {
                     var validSlope = Vector3.Angle(circleHit.normal, Vector3.up) < slopeLimit;
+                    _pointBuffer.Add(circleHit.point);
+                    if (_pointBuffer.Count >= 3)
+                    {
+                        for (int j = 0; j < _pointBuffer.Count - 2; j++)
+                        {
+                            var plane = new Plane(_pointBuffer[j], _pointBuffer[j + 1], _pointBuffer[_pointBuffer.Count - 1]);
+                            var normal = plane.normal;
+                            totalNormal += normal.y > 0 ? normal : -normal;
+                            normalCount++;
+                        }
+                    }
                     if (!isHit || (validSlope && circleHit.distance < closestHit.distance))
                     {
                         isHit = true;
@@ -47,6 +62,16 @@ namespace CharacterControls.Movements
             }
 
             hit = closestHit;
+            if (normalCount > 0)
+            {
+                hit.normal = totalNormal / normalCount;
+            }
+
+            if (DrawDebug)
+            {
+                Debug.DrawRay(hit.point, hit.normal, Color.blue);
+            }
+
             return isValidGround;
         }
 
