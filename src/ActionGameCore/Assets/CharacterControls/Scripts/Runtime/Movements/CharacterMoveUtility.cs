@@ -33,17 +33,24 @@ namespace CharacterControls.Movements
                 if (Physics.Raycast(circleRay, out var circleHit, distance, layerMask))
                 {
                     var validSlope = Vector3.Angle(circleHit.normal, Vector3.up) < slopeLimit;
-                    _pointBuffer.Add(circleHit.point);
-                    if (_pointBuffer.Count >= 3)
+
+                    // Calculate surface normal
+                    if (validSlope)
                     {
-                        for (int j = 0; j < _pointBuffer.Count - 2; j++)
+                        _pointBuffer.Add(circleHit.point);
+                        if (_pointBuffer.Count >= 3)
                         {
-                            var plane = new Plane(_pointBuffer[j], _pointBuffer[j + 1], _pointBuffer[_pointBuffer.Count - 1]);
-                            var normal = plane.normal;
-                            totalNormal += normal.y > 0 ? normal : -normal;
-                            normalCount++;
+                            for (int j = 0; j < _pointBuffer.Count - 2; j++)
+                            {
+                                var plane = new Plane(_pointBuffer[j], _pointBuffer[j + 1], _pointBuffer[_pointBuffer.Count - 1]);
+                                var normal = plane.normal;
+                                totalNormal += normal.y > 0 ? normal : -normal;
+                                normalCount++;
+                            }
                         }
                     }
+
+                    // Check if the hit is the closest
                     if (!isHit || (validSlope && circleHit.distance < closestHit.distance))
                     {
                         isHit = true;
