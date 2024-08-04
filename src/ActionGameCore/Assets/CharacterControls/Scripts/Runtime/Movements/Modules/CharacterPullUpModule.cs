@@ -5,7 +5,7 @@ using UnityEngine.Events;
 
 namespace CharacterControls.Movements.Modules
 {
-    public class CharacterPullUpModule : MonoBehaviour, ICharacterMoveModule, IInputReceiver<float>
+    public class CharacterPullUpModule : MonoBehaviour, ICharacterMoveModule
     {
         [SerializeField]
         public float[] CheckDistances = new float[] { 0.25f, 0.3f, 0.4f };
@@ -37,7 +37,6 @@ namespace CharacterControls.Movements.Modules
         [SerializeField]
         public UnityEvent OnPullUp = default;
 
-        private bool _jumpInput;
         private List<IDisposable> _stopRequests = new List<IDisposable>();
         private float _stopElapsedTime;
         private List<CharacterJumpModule> _jumpModuleBuffer = new List<CharacterJumpModule>();
@@ -62,14 +61,6 @@ namespace CharacterControls.Movements.Modules
             _stopRequests.Clear();
         }
 
-        public void OnReceiveInput(string key, float value)
-        {
-            if (key == "Jump")
-            {
-                _jumpInput = value > 0f;
-            }
-        }
-
         public void FixedUpdateModule(in CharacterMoveModulePayload payload)
         {
             _stopElapsedTime += Time.deltaTime;
@@ -82,7 +73,7 @@ namespace CharacterControls.Movements.Modules
                 _stopRequests.Clear();
             }
 
-            if (!_jumpInput || payload.Controller.IsGrounded || _stopRequests.Count > 0)
+            if (payload.Controller.IsGrounded || _stopRequests.Count > 0)
             {
                 return;
             }
