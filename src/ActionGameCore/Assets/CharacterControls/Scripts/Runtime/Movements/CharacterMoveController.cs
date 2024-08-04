@@ -102,68 +102,36 @@ namespace CharacterControls.Movements
                 return;
             }
 
-            const float DistanceTopMergin = 0.2f;
-            RaycastHit hitInfo = default;
+            const int CheckCount = 8;
+            const float Radius = 0.1f;
+            const float Margin = 0.1f;
+            RaycastHit hit = default;
+            var ray = new Ray(transform.position + transform.up * (StepHeightMax + Margin), -transform.up);
+            var distance = StepHeightMax * 2 + Margin;
             IsGrounded = !_skipGroundCheckRequestManager.HasRequest()
-                && CheckGround(DistanceTopMergin, StepHeightMax, out hitInfo)
-                && hitInfo.distance - DistanceTopMergin < StepHeightMax * 2;
+                && CharacterMoveUtility.CheckGroundSafety(ray, Radius, CheckCount, distance, SlopeLimit, out hit, GroundLayer)
+                && hit.distance < StepHeightMax * 2 + Margin;
 
-            if (_stopMoveRequestManager.HasRequest())
+            if (IsGrounded)
             {
-                TargetVelocity = Vector3.zero;
-                RelativeVelocityToGround = Vector3.zero;
+                CalculateFootSpring(hit);
             }
-            else
+
+            TargetVelocity = Vector3.zero;
+            RelativeVelocityToGround = Vector3.zero;
+            if (!_stopMoveRequestManager.HasRequest())
             {
                 if (IsGrounded)
                 {
-                    // Leg spring
-                    var springLength = hitInfo.distance - DistanceTopMergin;
-                    var springRatio = Mathf.Clamp01(springLength / StepHeightMax);
-                    var springPushForce = (1f - springRatio) * LegStrength;
-                    Rigidbody.AddForce(springPushForce * transform.up, ForceMode.Acceleration);
-
-                    // Leg suspension
-                    var currentVelocity = Rigidbody.velocity;
-                    if (hitInfo.rigidbody != null)
-                    {
-                        currentVelocity -= hitInfo.rigidbody.GetPointVelocity(hitInfo.point);
-                    }
-                    var suspensionForce = Vector3.Project(currentVelocity, transform.up) * -LegSuspenion * (1f - springRatio);
-                    Rigidbody.AddForce(suspensionForce, ForceMode.Acceleration);
-
-                    // Move horizontal
-                    var forward = GetForwardOfMovementSpace();
-                    var right = Vector3.Cross(transform.up, forward);
-                    var inputBaseVelocity = (forward * _moveInput.y + right * _moveInput.x) * WalkSpeed;
-                    TargetVelocity = Quaternion.FromToRotation(transform.up, hitInfo.normal) * inputBaseVelocity;
-                    Debug.DrawRay(transform.position, TargetVelocity, Color.red);
-                    RelativeVelocityToGround = Rigidbody.velocity;
-                    if (hitInfo.rigidbody != null)
-                    {
-                        RelativeVelocityToGround -= hitInfo.rigidbody.GetPointVelocity(hitInfo.point);
-                    }
-                    var diffVelocity = TargetVelocity - RelativeVelocityToGround;
-                    diffVelocity -= Vector3.Project(diffVelocity, transform.up); // Remove velocity on normal
-                    _frictionCalculator.StaticFriction = StaticFriction;
-                    _frictionCalculator.DynamicFriction = DynamicFriction;
-                    _frictionCalculator.Strength = FrictionStrength;
-                    _frictionCalculator.Calculate(-diffVelocity);
-                    var addVelocity = _frictionCalculator.FrictionForce;
-                    Rigidbody.AddForce(addVelocity, ForceMode.Acceleration);
+                    Walk(hit);
                 }
                 else
                 {
-                    var forward = GetForwardOfMovementSpace();
-                    var right = Vector3.Cross(transform.up, forward);
-                    TargetVelocity = (forward * _moveInput.y + right * _moveInput.x) * AirWalkSpeed;
-                    RelativeVelocityToGround = Rigidbody.velocity;
-                    var addVelocity = TargetVelocity - (Rigidbody.velocity - Vector3.Project(Rigidbody.velocity, transform.up));
-                    Rigidbody.AddForce(addVelocity, ForceMode.Acceleration);
+                    WalkAir();
                 }
             }
 
-            var modulePayload = new CharacterMoveModulePayload(this, transform);
+            var modulePayload = new CharacterMoveModulePayload(transform, Rigidbody, this);
             var count = _modules.Count;
             for (var i = 0; i < count; i++)
             {
@@ -171,60 +139,53 @@ namespace CharacterControls.Movements
             }
         }
 
-        private bool CheckGround(float topMargin, float bottomMargin, out RaycastHit hit)
+        private void CalculateFootSpring(RaycastHit hit)
         {
-            const int CheckCount = 4;
-            const float Radius = 0.1f;
+            // Leg spring
+            var springLength = hit.distance;
+            var springRatio = Mathf.Clamp01(springLength / StepHeightMax);
+            var springPushForce = (1f - springRatio) * LegStrength;
+            Rigidbody.AddForce(springPushForce * transform.up, ForceMode.Acceleration);
 
-            var isHit = false;
-            var isValidGround = false;
-            RaycastHit closestHitInfo = default;
-            for (int i = 0; i < CheckCount; i++)
+            // Leg suspension
+            var currentVelocity = Rigidbody.velocity;
+            if (hit.rigidbody != null)
             {
-                var rad = 360f / CheckCount * i * Mathf.Deg2Rad;
-                var pointOnCircle = new Vector3(Mathf.Sin(rad), 0, Mathf.Cos(rad)) * Radius;
-                var ray = new Ray(transform.position + transform.up * (StepHeightMax + topMargin) + pointOnCircle, -transform.up);
-                var distance = StepHeightMax + topMargin + bottomMargin;
-                if (Physics.Raycast(ray, out var hitInfo, distance, GroundLayer))
-                {
-                    var validSlope = Vector3.Angle(hitInfo.normal, Vector3.up) < SlopeLimit;
-                    if (!isHit || (validSlope && hitInfo.distance < closestHitInfo.distance))
-                    {
-                        isHit = true;
-                        isValidGround = validSlope;
-                        closestHitInfo = hitInfo;
-                    }
-
-                    Debug.DrawLine(ray.origin, hitInfo.point, validSlope ? Color.green : Color.red);
-                }
-                else
-                {
-                    Debug.DrawLine(ray.origin, ray.GetPoint(distance), Color.yellow);
-                }
+                currentVelocity -= hit.rigidbody.GetPointVelocity(hit.point);
             }
-
-            hit = closestHitInfo;
-            return isValidGround;
+            var suspensionForce = Vector3.Project(currentVelocity, transform.up) * -LegSuspenion * (1f - springRatio);
+            Rigidbody.AddForce(suspensionForce, ForceMode.Acceleration);
         }
 
-        private Vector3 GetForwardOfMovementSpace()
+        private void Walk(RaycastHit hit)
         {
-            if (CameraTransform == null)
+            var forward = CharacterMoveUtility.GetForwardMovementDirectionFromCamera(transform, CameraTransform);
+            var right = Vector3.Cross(transform.up, forward);
+            var inputBaseVelocity = (forward * _moveInput.y + right * _moveInput.x) * WalkSpeed;
+            TargetVelocity = Quaternion.FromToRotation(transform.up, hit.normal) * inputBaseVelocity;
+            RelativeVelocityToGround = Rigidbody.velocity;
+            if (hit.rigidbody != null)
             {
-                return transform.forward;
+                RelativeVelocityToGround -= hit.rigidbody.GetPointVelocity(hit.point);
             }
+            var diffVelocity = TargetVelocity - RelativeVelocityToGround;
+            diffVelocity -= Vector3.Project(diffVelocity, transform.up); // Remove velocity on normal
+            _frictionCalculator.StaticFriction = StaticFriction;
+            _frictionCalculator.DynamicFriction = DynamicFriction;
+            _frictionCalculator.Strength = FrictionStrength;
+            _frictionCalculator.Calculate(-diffVelocity);
+            var addVelocity = _frictionCalculator.FrictionForce;
+            Rigidbody.AddForce(addVelocity, ForceMode.Acceleration);
+        }
 
-            var forward = CameraTransform.forward;
-            if (forward == transform.up)
-            {
-                forward = -CameraTransform.up;
-            }
-            else if (forward == -transform.up)
-            {
-                forward = CameraTransform.up;
-            }
-
-            return Vector3.ProjectOnPlane(forward, transform.up).normalized;
+        private void WalkAir()
+        {
+            var forward = CharacterMoveUtility.GetForwardMovementDirectionFromCamera(transform, CameraTransform);
+            var right = Vector3.Cross(transform.up, forward);
+            TargetVelocity = (forward * _moveInput.y + right * _moveInput.x) * AirWalkSpeed;
+            RelativeVelocityToGround = Rigidbody.velocity;
+            var addVelocity = TargetVelocity - (Rigidbody.velocity - Vector3.Project(Rigidbody.velocity, transform.up));
+            Rigidbody.AddForce(addVelocity, ForceMode.Acceleration);
         }
 
         public void RegisterModule(ICharacterMoveModule module)
