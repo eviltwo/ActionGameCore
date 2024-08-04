@@ -47,7 +47,13 @@ namespace CharacterControls.Movements
         public float DynamicFriction = 1.0f;
 
         [SerializeField]
-        public float AirWalkSpeed = 5.0f;
+        public float AirWalkAcceleration = 2.0f;
+
+        [SerializeField]
+        public float AirWalkAccelerationMax = 5.0f;
+
+        [SerializeField]
+        public float AirWalkSpeedMax = 5.0f;
 
         [SerializeField]
         private bool _drawDebug = false;
@@ -125,18 +131,14 @@ namespace CharacterControls.Movements
                 CalculateLegSpring(hit, Margin);
             }
 
-            TargetVelocity = Vector3.zero;
-            RelativeVelocityToGround = Vector3.zero;
-            if (!_stopMoveRequestManager.HasRequest())
+            var input = _stopMoveRequestManager.HasRequest() ? Vector2.zero : _moveInput;
+            if (IsGrounded)
             {
-                if (IsGrounded)
-                {
-                    Walk(hit);
-                }
-                else
-                {
-                    WalkAir();
-                }
+                Walk(input, hit);
+            }
+            else
+            {
+                WalkAir(input);
             }
 
             var modulePayload = new CharacterMoveModulePayload(transform, Rigidbody, this);
@@ -165,11 +167,11 @@ namespace CharacterControls.Movements
             Rigidbody.AddForce(damperForce, ForceMode.Acceleration);
         }
 
-        private void Walk(RaycastHit hit)
+        private void Walk(Vector2 input, RaycastHit hit)
         {
             var forward = CharacterMoveUtility.GetForwardMovementDirectionFromCamera(transform, CameraTransform);
             var right = Vector3.Cross(transform.up, forward);
-            var inputBaseVelocity = (forward * _moveInput.y + right * _moveInput.x) * WalkSpeed;
+            var inputBaseVelocity = (forward * input.y + right * input.x) * WalkSpeed;
             TargetVelocity = Quaternion.FromToRotation(transform.up, hit.normal) * inputBaseVelocity;
             RelativeVelocityToGround = Rigidbody.velocity;
             if (hit.rigidbody != null)
@@ -186,13 +188,31 @@ namespace CharacterControls.Movements
             Rigidbody.AddForce(addVelocity, ForceMode.Acceleration);
         }
 
-        private void WalkAir()
+        private void WalkAir(Vector2 input)
         {
             var forward = CharacterMoveUtility.GetForwardMovementDirectionFromCamera(transform, CameraTransform);
             var right = Vector3.Cross(transform.up, forward);
-            TargetVelocity = (forward * _moveInput.y + right * _moveInput.x) * AirWalkSpeed;
+            TargetVelocity = (forward * input.y + right * input.x) * AirWalkSpeedMax;
             RelativeVelocityToGround = Rigidbody.velocity;
-            var addVelocity = TargetVelocity - (Rigidbody.velocity - Vector3.Project(Rigidbody.velocity, transform.up));
+            var diffVelocity = TargetVelocity - RelativeVelocityToGround;
+            diffVelocity.y = 0;
+            var addVelocity = diffVelocity * AirWalkAcceleration;
+
+            // If the maximum input is made in the same direction as the movement direction, don't brake the velocity.
+            var targetDirectionAddSpeed = Vector3.Dot(addVelocity, TargetVelocity.normalized);
+            const float fullInputThreshold = 0.75f;
+            if (input.sqrMagnitude > fullInputThreshold * fullInputThreshold && targetDirectionAddSpeed < 0)
+            {
+                var moveDirectionMatchRatio = 1 - Mathf.Clamp01(Vector3.Angle(TargetVelocity, RelativeVelocityToGround) / 180);
+                addVelocity -= TargetVelocity.normalized * (targetDirectionAddSpeed * moveDirectionMatchRatio);
+            }
+
+            // Speed limit
+            if (addVelocity.sqrMagnitude > AirWalkAccelerationMax * AirWalkAccelerationMax)
+            {
+                addVelocity = addVelocity.normalized * AirWalkAccelerationMax;
+            }
+
             Rigidbody.AddForce(addVelocity, ForceMode.Acceleration);
         }
 

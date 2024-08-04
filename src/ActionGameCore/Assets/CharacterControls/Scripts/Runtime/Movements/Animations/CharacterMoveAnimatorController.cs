@@ -70,7 +70,7 @@ namespace CharacterControls.Movements.Animations
             {
                 var targetRotation = Quaternion.LookRotation(horizontalVelocity, ModelRoot.up);
                 var rotateSpeed = CharacterMoveController.IsGrounded ? RotateSpeedOnGround : RotateSpeedInAir;
-                var targetSpeed = CharacterMoveController.IsGrounded ? CharacterMoveController.WalkSpeed : CharacterMoveController.AirWalkSpeed;
+                var targetSpeed = CharacterMoveController.IsGrounded ? CharacterMoveController.WalkSpeed : CharacterMoveController.AirWalkSpeedMax;
                 var speedRatio = Mathf.InverseLerp(0, targetSpeed, horizontalVelocity.magnitude);
                 ModelRoot.rotation = Quaternion.RotateTowards(ModelRoot.rotation, targetRotation, rotateSpeed * speedRatio * Time.deltaTime);
             }
