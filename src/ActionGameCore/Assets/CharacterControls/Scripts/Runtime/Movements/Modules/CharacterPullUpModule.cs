@@ -8,7 +8,7 @@ namespace CharacterControls.Movements.Modules
     public class CharacterPullUpModule : MonoBehaviour, ICharacterMoveModule
     {
         [SerializeField]
-        public float[] CheckDistances = new float[] { 0.25f, 0.3f, 0.4f };
+        public float CheckDistance = 0.3f;
 
         [SerializeField]
         public float CheckRadius = 0.1f;
@@ -91,29 +91,24 @@ namespace CharacterControls.Movements.Modules
                 return;
             }
 
-            var checkCount = CheckDistances.Length;
-            for (var i = 0; i < checkCount; i++)
+            var ray = new Ray(payload.Root.position + MoveDirection * CheckDistance + payload.Root.up * MaxHeight, -payload.Root.up);
+            var verticalDistance = MaxHeight - MinHeight;
+            if (CharacterMoveUtility.CheckGroundSafety(ray, CheckRadius, 8, verticalDistance, SlopeLimit, out var hit, payload.Controller.GroundLayer)
+                && Vector3.Angle(hit.normal, Vector3.up) < SlopeLimit
+                && !Physics.CheckCapsule(hit.point + payload.Root.up * SafetyCapsuleStart, hit.point + payload.Root.up * SafetyCapsuleEnd, SafetyCapsuleRadius, payload.Controller.GroundLayer))
             {
-                var distance = CheckDistances[i];
-                var ray = new Ray(payload.Root.position + MoveDirection * distance + payload.Root.up * (MaxHeight + CheckRadius), -payload.Root.up);
-                if (Physics.SphereCast(ray, CheckRadius, out var hitInfo, MaxHeight - MinHeight, payload.Controller.GroundLayer)
-                    && Vector3.Angle(hitInfo.normal, Vector3.up) < SlopeLimit
-                    && !Physics.CheckCapsule(hitInfo.point + payload.Root.up * SafetyCapsuleStart, hitInfo.point + payload.Root.up * SafetyCapsuleEnd, SafetyCapsuleRadius, payload.Controller.GroundLayer))
+                var rig = payload.Controller.Rigidbody;
+                rig.MovePosition(hit.point);
+                var accVelocity = payload.Controller.Rigidbody.GetAccumulatedForce() / rig.mass * Time.fixedDeltaTime;
+                rig.AddForce(-rig.velocity - accVelocity, ForceMode.VelocityChange);
+                _stopRequests.Add(payload.Controller.RequestStopMove());
+                payload.Controller.GetModules(_jumpModuleBuffer);
+                for (int j = 0; j < _jumpModuleBuffer.Count; j++)
                 {
-                    var rig = payload.Controller.Rigidbody;
-                    rig.MovePosition(hitInfo.point);
-                    var accVelocity = payload.Controller.Rigidbody.GetAccumulatedForce() / rig.mass * Time.fixedDeltaTime;
-                    rig.AddForce(-rig.velocity - accVelocity, ForceMode.VelocityChange);
-                    _stopRequests.Add(payload.Controller.RequestStopMove());
-                    payload.Controller.GetModules(_jumpModuleBuffer);
-                    for (int j = 0; j < _jumpModuleBuffer.Count; j++)
-                    {
-                        _stopRequests.Add(_jumpModuleBuffer[j].RequestStopJump());
-                    }
-                    _stopElapsedTime = 0f;
-                    OnPullUp?.Invoke();
-                    break;
+                    _stopRequests.Add(_jumpModuleBuffer[j].RequestStopJump());
                 }
+                _stopElapsedTime = 0f;
+                OnPullUp?.Invoke();
             }
         }
     }

@@ -8397,8 +8397,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 75cd293bc075aaa4bb074e1c95128899, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  CheckDistances:
-  - 0.31
+  CheckDistance: 0.31
   CheckRadius: 0.1
   MaxHeight: 1.6
   MinHeight: 1
