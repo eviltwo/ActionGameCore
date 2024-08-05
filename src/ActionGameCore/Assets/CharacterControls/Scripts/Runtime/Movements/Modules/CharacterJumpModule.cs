@@ -28,6 +28,9 @@ namespace CharacterControls.Movements.Modules
         private IDisposable _skipGroundCheckRequest;
         private ModuleRequestManager _stopJumpRequestManager = new ModuleRequestManager();
 
+        public bool IsJumping { get; private set; }
+        public bool IsCoyoteTime => !IsJumping && _groundElapsedTime < CoyoteDuration;
+
         private void Start()
         {
             var characterMoveController = GetComponentInParent<CharacterMoveController>();
@@ -61,6 +64,7 @@ namespace CharacterControls.Movements.Modules
             if (payload.Controller.IsGrounded)
             {
                 _groundElapsedTime = 0;
+                IsJumping = false;
             }
 
             _jumpElapsedTime += Time.fixedDeltaTime;
@@ -84,6 +88,7 @@ namespace CharacterControls.Movements.Modules
                 verticalSpeed = Mathf.Min(verticalSpeed, 0);
                 rig.AddForce(payload.Root.up * (JumpSpeed - verticalSpeed), ForceMode.VelocityChange);
                 _jumpElapsedTime = 0;
+                IsJumping = true;
                 _groundElapsedTime = float.MaxValue;
                 _skipGroundCheckRequest = payload.Controller.RequestSkipGroundCheck();
                 OnJump?.Invoke();
