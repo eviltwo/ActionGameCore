@@ -1,5 +1,15 @@
 # Changelog
 
+## [0.10.1] - DEVELOP
+### Changed
+- Changed walk on stairs to smooth.
+- changed walk on narrow bridge to smooth.
+- Changed input setup for modules.
+- Changed move control in air to more fast.
+- Changed wall check for pull up movement.
+### Fixed
+- Fixed spring and damper issues.
+
 ## [0.10.0] - 2024-08-04
 ### Changed
 - The character's movement process has been subdivided into the Module class.
