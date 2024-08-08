@@ -38,7 +38,6 @@ namespace CharacterControls.Movements
         private bool _drawDebug = false;
 
         private ModuleRequestManager _skipGroundCheckRequestManager = new ModuleRequestManager();
-        private ModuleRequestManager _stopMoveRequestManager = new ModuleRequestManager();
         private List<ICharacterModule> _modules = new List<ICharacterModule>();
 
         public bool IsGrounded { get; private set; }
@@ -170,11 +169,6 @@ namespace CharacterControls.Movements
         public IDisposable RequestSkipGroundCheck()
         {
             return _skipGroundCheckRequestManager.GetRequest();
-        }
-
-        public IDisposable RequestStopMove()
-        {
-            return _stopMoveRequestManager.GetRequest();
         }
     }
 }

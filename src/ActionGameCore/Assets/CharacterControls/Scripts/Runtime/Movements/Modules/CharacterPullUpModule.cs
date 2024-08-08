@@ -52,7 +52,6 @@ namespace CharacterControls.Movements.Modules
         private List<IDisposable> _stopRequests = new List<IDisposable>();
         private float _stopElapsedTime;
         public float StopDuration { get; private set; }
-        private List<CharacterJumpModule> _jumpModuleBuffer = new List<CharacterJumpModule>();
 
         public Vector3 LastMoveDirection { get; private set; }
 
@@ -125,11 +124,10 @@ namespace CharacterControls.Movements.Modules
                 {
                     rig.AddForce(hit.rigidbody.velocity, ForceMode.VelocityChange);
                 }
-                _stopRequests.Add(payload.Controller.RequestStopMove());
-                payload.Controller.GetModules(_jumpModuleBuffer);
-                for (int j = 0; j < _jumpModuleBuffer.Count; j++)
+                _stopRequests.Add(walkModule.RequestStopMove());
+                if (payload.Controller.TryGetModule<CharacterJumpModule>(out var jumpModule))
                 {
-                    _stopRequests.Add(_jumpModuleBuffer[j].RequestStopJump());
+                    _stopRequests.Add(jumpModule.RequestStopJump());
                 }
                 LastMoveDirection = moveDirection;
                 var heightRatio = Mathf.InverseLerp(HeightMin, HeightMax, grabHeight);

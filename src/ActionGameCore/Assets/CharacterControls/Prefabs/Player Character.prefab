@@ -53,8 +53,8 @@ MonoBehaviour:
   SlopeLimit: 45
   RequireAirborneState: 1
   RequireFallingState: 1
-  StopMoveDurationMin: 0.5
-  StopMoveDurationMax: 1
+  StopMoveDurationMin: 0.1
+  StopMoveDurationMax: 0.5
   SafetyCapsuleStart: 0.5
   SafetyCapsuleEnd: 1.5
   SafetyCapsuleRadius: 0.1
