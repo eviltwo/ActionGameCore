@@ -300,7 +300,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   WalkSpeed: 5
-  SpeedReductionBySlope: 0.5
+  SpeedReductionBySlope: 0.25
   StaticFriction: 0.6
   DynamicFriction: 0.5
   AirWalkAcceleration: 2
