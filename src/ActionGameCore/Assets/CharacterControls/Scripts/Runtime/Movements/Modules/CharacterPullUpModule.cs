@@ -107,6 +107,10 @@ namespace CharacterControls.Movements.Modules
                 rig.MovePosition(edge);
                 var accVelocity = payload.Controller.Rigidbody.GetAccumulatedForce() / rig.mass * Time.fixedDeltaTime;
                 rig.AddForce(-rig.velocity - accVelocity, ForceMode.VelocityChange);
+                if (hit.rigidbody != null)
+                {
+                    rig.AddForce(hit.rigidbody.velocity, ForceMode.VelocityChange);
+                }
                 _stopRequests.Add(payload.Controller.RequestStopMove());
                 payload.Controller.GetModules(_jumpModuleBuffer);
                 for (int j = 0; j < _jumpModuleBuffer.Count; j++)

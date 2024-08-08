@@ -1894,7 +1894,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   _rigidbody: {fileID: 643131871}
-  LoopDuration: 8
+  LoopDuration: 4
   MoveCurve:
     serializedVersion: 2
     m_Curve:
@@ -3732,8 +3732,8 @@ MonoBehaviour:
   ModelRoot: {fileID: 1314562539}
   Animator: {fileID: 1314562540}
   Module: {fileID: 1919363448}
-  PullUpAnimatorParameterTrigger: OnPullUp
-  AnimatorRefreshCount: 3
+  PullUpStartTimeMax: 0.9
+  PullUpState: PullUp
 --- !u!1 &1318817720
 GameObject:
   m_ObjectHideFlags: 0
@@ -10397,7 +10397,8 @@ MonoBehaviour:
   MaxHeight: 1.6
   MinHeight: 1
   SlopeLimit: 45
-  StopMoveDuration: 0.5
+  StopMoveDurationMin: 0.1
+  StopMoveDurationMax: 0.5
   SafetyCapsuleStart: 0.5
   SafetyCapsuleEnd: 1.5
   SafetyCapsuleRadius: 0.1
