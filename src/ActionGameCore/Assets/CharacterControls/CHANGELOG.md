@@ -1,6 +1,8 @@
 # Changelog
 
-## [0.10.2] - DEVELOP
+## [0.11.0] - DEVELOP
+### Changed
+- Changed the module to inherit from CharacterModuleBase.
 
 ## [0.10.1] - 2024-08-08
 ### Changed
