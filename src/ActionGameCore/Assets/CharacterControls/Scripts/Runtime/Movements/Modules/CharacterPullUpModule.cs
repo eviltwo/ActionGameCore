@@ -26,6 +26,12 @@ namespace CharacterControls.Movements.Modules
         public float SlopeLimit = 45.0f;
 
         [SerializeField]
+        public bool RequireAirborneState = true;
+
+        [SerializeField]
+        public bool RequireFallingState = true;
+
+        [SerializeField]
         public float StopMoveDurationMin = 0.1f;
 
         [SerializeField]
@@ -72,9 +78,20 @@ namespace CharacterControls.Movements.Modules
                 _stopRequests.Clear();
             }
 
-            if (payload.Controller.IsGrounded
-                || Vector3.Dot(payload.Rigidbody.velocity, payload.Root.up) > 0f
-                || _stopRequests.Count > 0)
+            // Check stop requests
+            if (_stopRequests.Count > 0)
+            {
+                return;
+            }
+
+            // Check airborne state
+            if (RequireAirborneState && payload.Controller.IsGrounded)
+            {
+                return;
+            }
+
+            // Check falling state
+            if (RequireFallingState && Vector3.Dot(payload.Rigidbody.velocity, payload.Root.up) > 0f)
             {
                 return;
             }

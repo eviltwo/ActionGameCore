@@ -4,6 +4,8 @@
 ### Changed
 - Changed the module to inherit from CharacterModuleBase.
 - Changed the movement process to the Module class.
+### Added
+- Added a parameter to make the Pull-up module operable on the ground.
 
 ## [0.10.1] - 2024-08-08
 ### Changed
