@@ -5,7 +5,7 @@ using UnityEngine.Events;
 
 namespace CharacterControls.Movements.Modules
 {
-    public class CharacterPullUpModule : MonoBehaviour, ICharacterModule
+    public class CharacterPullUpModule : CharacterModuleBase
     {
         [SerializeField]
         public float CheckDistanceStart = 0.3f;
@@ -50,17 +50,9 @@ namespace CharacterControls.Movements.Modules
 
         public Vector3 LastMoveDirection { get; private set; }
 
-        private void Start()
+        protected override void OnDestroy()
         {
-            var characterMoveController = GetComponentInParent<CharacterMoveController>();
-            characterMoveController?.RegisterModule(this);
-        }
-
-        private void OnDestroy()
-        {
-            var characterMoveController = GetComponentInParent<CharacterMoveController>();
-            characterMoveController?.UnregisterModule(this);
-
+            base.OnDestroy();
             foreach (var request in _stopRequests)
             {
                 request?.Dispose();
@@ -68,7 +60,7 @@ namespace CharacterControls.Movements.Modules
             _stopRequests.Clear();
         }
 
-        public void FixedUpdateModule(in CharacterMoveModulePayload payload)
+        public override void FixedUpdateModule(in CharacterMoveModulePayload payload)
         {
             _stopElapsedTime += Time.deltaTime;
             if (_stopRequests.Count > 0 && _stopElapsedTime > StopDuration)

@@ -4,7 +4,7 @@ using UnityEngine.Events;
 
 namespace CharacterControls.Movements.Modules
 {
-    public class CharacterJumpModule : MonoBehaviour, ICharacterModule, IInputReceiver<float>
+    public class CharacterJumpModule : CharacterModuleBase, IInputReceiver<float>
     {
         [SerializeField]
         public float BufferedInputDuration = 0.1f;
@@ -31,17 +31,9 @@ namespace CharacterControls.Movements.Modules
         public bool IsJumping { get; private set; }
         public bool IsCoyoteTime => !IsJumping && _groundElapsedTime < CoyoteDuration;
 
-        private void Start()
+        protected override void OnDestroy()
         {
-            var characterMoveController = GetComponentInParent<CharacterMoveController>();
-            characterMoveController?.RegisterModule(this);
-        }
-
-        private void OnDestroy()
-        {
-            var characterMoveController = GetComponentInParent<CharacterMoveController>();
-            characterMoveController?.UnregisterModule(this);
-
+            base.OnDestroy();
             _skipGroundCheckRequest?.Dispose();
             _skipGroundCheckRequest = null;
         }
@@ -58,7 +50,7 @@ namespace CharacterControls.Movements.Modules
             }
         }
 
-        public void FixedUpdateModule(in CharacterMoveModulePayload payload)
+        public override void FixedUpdateModule(in CharacterMoveModulePayload payload)
         {
             _groundElapsedTime += Time.fixedDeltaTime;
             if (payload.Controller.IsGrounded)
