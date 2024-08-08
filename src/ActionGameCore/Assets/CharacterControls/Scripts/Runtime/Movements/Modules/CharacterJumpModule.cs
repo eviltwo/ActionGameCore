@@ -92,7 +92,6 @@ namespace CharacterControls.Movements.Modules
                 var jumpHeight = GetHeightByJumpSpeed(JumpSpeed, -Physics.gravity.y);
                 var modifiedJumpSpeed = GetJumpSpeedByHeight(jumpHeight - currentHeight, -Physics.gravity.y);
                 modifiedJumpSpeed = Mathf.Min(modifiedJumpSpeed, JumpSpeed);
-                Debug.Log(modifiedJumpSpeed);
                 // Apply jump force
                 rig.AddForce(payload.Root.up * (modifiedJumpSpeed - verticalSpeed), ForceMode.VelocityChange);
                 _jumpElapsedTime = 0;
