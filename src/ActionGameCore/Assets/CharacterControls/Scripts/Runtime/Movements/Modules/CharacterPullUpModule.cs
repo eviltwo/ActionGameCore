@@ -5,7 +5,7 @@ using UnityEngine.Events;
 
 namespace CharacterControls.Movements.Modules
 {
-    public class CharacterPullUpModule : MonoBehaviour, ICharacterMoveModule
+    public class CharacterPullUpModule : MonoBehaviour, ICharacterModule
     {
         [SerializeField]
         public float CheckDistanceStart = 0.3f;

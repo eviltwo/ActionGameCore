@@ -59,7 +59,7 @@ namespace CharacterControls.Movements
         private FrictionCalculator _frictionCalculator = new FrictionCalculator();
         private ModuleRequestManager _skipGroundCheckRequestManager = new ModuleRequestManager();
         private ModuleRequestManager _stopMoveRequestManager = new ModuleRequestManager();
-        private List<ICharacterMoveModule> _modules = new List<ICharacterMoveModule>();
+        private List<ICharacterModule> _modules = new List<ICharacterModule>();
 
         public bool IsGrounded { get; private set; }
 
@@ -216,18 +216,18 @@ namespace CharacterControls.Movements
             Rigidbody.AddForce(addVelocity, ForceMode.Acceleration);
         }
 
-        public void RegisterModule(ICharacterMoveModule module)
+        public void RegisterModule(ICharacterModule module)
         {
             _modules.Add(module);
         }
 
-        public void UnregisterModule(ICharacterMoveModule module)
+        public void UnregisterModule(ICharacterModule module)
         {
             _modules.Remove(module);
         }
 
         public void GetModules<T>(List<T> results)
-            where T : ICharacterMoveModule
+            where T : ICharacterModule
         {
             results.Clear();
             var count = _modules.Count;

@@ -1,6 +1,6 @@
 namespace CharacterControls.Movements.Modules
 {
-    public interface ICharacterMoveModule
+    public interface ICharacterModule
     {
         void FixedUpdateModule(in CharacterMoveModulePayload payload);
     }

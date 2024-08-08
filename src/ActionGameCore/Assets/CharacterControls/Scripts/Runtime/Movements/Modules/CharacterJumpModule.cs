@@ -4,7 +4,7 @@ using UnityEngine.Events;
 
 namespace CharacterControls.Movements.Modules
 {
-    public class CharacterJumpModule : MonoBehaviour, ICharacterMoveModule, IInputReceiver<float>
+    public class CharacterJumpModule : MonoBehaviour, ICharacterModule, IInputReceiver<float>
     {
         [SerializeField]
         public float BufferedInputDuration = 0.1f;
