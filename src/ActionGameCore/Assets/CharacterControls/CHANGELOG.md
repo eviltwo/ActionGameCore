@@ -6,6 +6,8 @@
 - Changed the movement process to the Module class.
 ### Added
 - Added a parameter to make the Pull-up module operable on the ground.
+### Fixed
+- Fixed a bug where it would hop on slopes.
 
 ## [0.10.1] - 2024-08-08
 ### Changed

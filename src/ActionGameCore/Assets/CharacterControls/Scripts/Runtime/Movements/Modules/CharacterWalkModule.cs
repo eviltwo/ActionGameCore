@@ -67,13 +67,14 @@ namespace CharacterControls.Movements.Modules
             var right = Vector3.Cross(root.up, forward);
             var inputBaseVelocity = (forward * input.y + right * input.x) * WalkSpeed;
             TargetVelocity = Quaternion.FromToRotation(root.up, hit.normal) * inputBaseVelocity;
+            Debug.DrawRay(hit.point, TargetVelocity, Color.red);
             RelativeVelocityToGround = rb.velocity;
             if (hit.rigidbody != null)
             {
                 RelativeVelocityToGround -= hit.rigidbody.GetPointVelocity(hit.point);
             }
             var diffVelocity = TargetVelocity - RelativeVelocityToGround;
-            diffVelocity -= Vector3.Project(diffVelocity, root.up); // Remove velocity on normal
+            diffVelocity -= Vector3.Project(diffVelocity, hit.normal); // Remove velocity on normal
             _frictionCalculator.StaticFriction = StaticFriction;
             _frictionCalculator.DynamicFriction = DynamicFriction;
             _frictionCalculator.Strength = FrictionStrength;
