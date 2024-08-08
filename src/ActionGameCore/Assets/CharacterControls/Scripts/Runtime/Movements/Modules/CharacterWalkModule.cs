@@ -73,7 +73,6 @@ namespace CharacterControls.Movements.Modules
                 var speedReductionRatio = Mathf.Sin(targetAngle * Mathf.Deg2Rad);
                 TargetVelocity -= TargetVelocity * (speedReductionRatio * SpeedReductionBySlope);
             }
-            Debug.DrawRay(hit.point, TargetVelocity, Color.red);
             RelativeVelocityToGround = rb.velocity;
             if (hit.rigidbody != null)
             {
