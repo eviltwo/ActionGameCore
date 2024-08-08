@@ -1,6 +1,6 @@
 # Changelog
 
-## [0.10.1] - DEVELOP
+## [0.10.1]
 ### Changed
 - Changed walk on stairs to smooth.
 - changed walk on narrow bridge to smooth.
