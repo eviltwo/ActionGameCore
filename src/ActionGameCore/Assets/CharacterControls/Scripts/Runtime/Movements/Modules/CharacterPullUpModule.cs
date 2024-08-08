@@ -26,7 +26,10 @@ namespace CharacterControls.Movements.Modules
         public float SlopeLimit = 45.0f;
 
         [SerializeField]
-        public float StopMoveDuration = 0.5f;
+        public float StopMoveDurationMin = 0.1f;
+
+        [SerializeField]
+        public float StopMoveDurationMax = 0.5f;
 
         [SerializeField]
         public float SafetyCapsuleStart = 0.5f;
@@ -42,6 +45,7 @@ namespace CharacterControls.Movements.Modules
 
         private List<IDisposable> _stopRequests = new List<IDisposable>();
         private float _stopElapsedTime;
+        public float StopDuration { get; private set; }
         private List<CharacterJumpModule> _jumpModuleBuffer = new List<CharacterJumpModule>();
 
         public Vector3 LastMoveDirection { get; private set; }
@@ -67,7 +71,7 @@ namespace CharacterControls.Movements.Modules
         public void FixedUpdateModule(in CharacterMoveModulePayload payload)
         {
             _stopElapsedTime += Time.deltaTime;
-            if (_stopRequests.Count > 0 && _stopElapsedTime > StopMoveDuration)
+            if (_stopRequests.Count > 0 && _stopElapsedTime > StopDuration)
             {
                 foreach (var request in _stopRequests)
                 {
@@ -98,6 +102,7 @@ namespace CharacterControls.Movements.Modules
                 && !Physics.CheckCapsule(hit.point + payload.Root.up * SafetyCapsuleStart, hit.point + payload.Root.up * SafetyCapsuleEnd, SafetyCapsuleRadius, payload.Controller.GroundLayer))
             {
                 var rig = payload.Controller.Rigidbody;
+                var grabHeight = hit.point.y - rig.position.y;
                 var edge = GetEdge(rig.position, hit.point, payload.Controller.GroundLayer);
                 rig.MovePosition(edge);
                 var accVelocity = payload.Controller.Rigidbody.GetAccumulatedForce() / rig.mass * Time.fixedDeltaTime;
@@ -109,6 +114,8 @@ namespace CharacterControls.Movements.Modules
                     _stopRequests.Add(_jumpModuleBuffer[j].RequestStopJump());
                 }
                 LastMoveDirection = moveDirection;
+                var heightRatio = Mathf.InverseLerp(MinHeight, MaxHeight, grabHeight);
+                StopDuration = Mathf.Lerp(StopMoveDurationMin, StopMoveDurationMax, heightRatio);
                 _stopElapsedTime = 0f;
                 OnPullUp?.Invoke();
             }

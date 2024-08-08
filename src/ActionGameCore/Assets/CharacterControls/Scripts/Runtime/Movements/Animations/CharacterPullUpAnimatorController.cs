@@ -15,10 +15,10 @@ namespace CharacterControls.Movements.Animations
         public CharacterPullUpModule Module = null;
 
         [SerializeField]
-        public string PullUpAnimatorParameterTrigger = "OnPullUp";
+        public float PullUpStartTimeMax = 0.9f;
 
         [SerializeField]
-        public int AnimatorRefreshCount = 3;
+        public string PullUpState = "PullUp";
 
         private void Reset()
         {
@@ -46,11 +46,9 @@ namespace CharacterControls.Movements.Animations
         private void OnPullUp()
         {
             ModelRoot.rotation = Quaternion.LookRotation(Module.LastMoveDirection, ModelRoot.up);
-            Animator.SetTrigger(PullUpAnimatorParameterTrigger);
-            for (int i = 0; i < AnimatorRefreshCount; i++)
-            {
-                Animator.Update(0);
-            }
+            var durationRatio = Mathf.InverseLerp(Module.StopMoveDurationMin, Module.StopMoveDurationMax, Module.StopDuration);
+            var motionTime = Mathf.Lerp(0f, PullUpStartTimeMax, durationRatio);
+            Animator.Play(PullUpState, 0, motionTime);
         }
     }
 }

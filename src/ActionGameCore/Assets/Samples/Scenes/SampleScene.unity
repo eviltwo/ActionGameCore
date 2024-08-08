@@ -3668,9 +3668,6 @@ PrefabInstance:
     - targetCorrespondingSourceObject: {fileID: 919132149155446097, guid: 36078ab0369161e49a29d349ae3e0739, type: 3}
       insertIndex: -1
       addedObject: {fileID: 1314562543}
-    - targetCorrespondingSourceObject: {fileID: 919132149155446097, guid: 36078ab0369161e49a29d349ae3e0739, type: 3}
-      insertIndex: -1
-      addedObject: {fileID: 1314562544}
   m_SourcePrefab: {fileID: 100100000, guid: 36078ab0369161e49a29d349ae3e0739, type: 3}
 --- !u!4 &1314562539 stripped
 Transform:
@@ -3736,34 +3733,7 @@ MonoBehaviour:
   Animator: {fileID: 1314562540}
   Module: {fileID: 1919363448}
   PullUpAnimatorParameterTrigger: OnPullUp
---- !u!114 &1314562544
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 432768784}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 767305a04162f194bb6dde722f0eee16, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  _repeatCount: 3
-  _event:
-    m_PersistentCalls:
-      m_Calls:
-      - m_Target: {fileID: 1314562540}
-        m_TargetAssemblyTypeName: UnityEngine.Animator, UnityEngine
-        m_MethodName: Update
-        m_Mode: 4
-        m_Arguments:
-          m_ObjectArgument: {fileID: 0}
-          m_ObjectArgumentAssemblyTypeName: UnityEngine.Object, UnityEngine
-          m_IntArgument: 0
-          m_FloatArgument: 0
-          m_StringArgument: 
-          m_BoolArgument: 0
-        m_CallState: 2
+  AnimatorRefreshCount: 3
 --- !u!1 &1318817720
 GameObject:
   m_ObjectHideFlags: 0

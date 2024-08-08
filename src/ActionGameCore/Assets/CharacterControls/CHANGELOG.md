@@ -7,6 +7,7 @@
 - Changed input setup for modules.
 - Changed move control in air to more fast.
 - Changed wall check for pull up movement.
+- Changed to directly play the pull up animator state.
 ### Fixed
 - Fixed spring and damper issues.
 - Fixed issue where the height was too high when jumping before landing on the ground.
