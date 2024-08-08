@@ -1,4 +1,5 @@
 using System.Collections.Generic;
+using CharacterControls.Movements.Modules;
 using UnityEngine;
 
 namespace CharacterControls.Movements.Animations
@@ -12,7 +13,10 @@ namespace CharacterControls.Movements.Animations
         public Animator Animator = null;
 
         [SerializeField]
-        public CharacterMoveController CharacterMoveController = null;
+        public CharacterMoveController MoveController = null;
+
+        [SerializeField]
+        public CharacterWalkModule Module;
 
         [SerializeField]
         public float RotateSpeedOnGround = 360.0f;
@@ -46,12 +50,13 @@ namespace CharacterControls.Movements.Animations
         {
             Animator = GetComponentInChildren<Animator>();
             ModelRoot = Animator == null ? transform : Animator.transform;
-            CharacterMoveController = GetComponentInParent<CharacterMoveController>();
+            MoveController = GetComponent<CharacterMoveController>();
+            Module = GetComponent<CharacterWalkModule>();
         }
 
         private void Update()
         {
-            if (CharacterMoveController == null || Animator == null)
+            if (MoveController == null || Module == null)
             {
                 return;
             }
@@ -63,14 +68,14 @@ namespace CharacterControls.Movements.Animations
 
         private void UpdateRotation()
         {
-            var velocity = CharacterMoveController.TargetVelocity;
+            var velocity = Module.TargetVelocity;
             var verticalVelocity = Vector3.Project(velocity, ModelRoot.up);
             var horizontalVelocity = velocity - verticalVelocity;
             if (horizontalVelocity.sqrMagnitude > 0.01f)
             {
                 var targetRotation = Quaternion.LookRotation(horizontalVelocity, ModelRoot.up);
-                var rotateSpeed = CharacterMoveController.IsGrounded ? RotateSpeedOnGround : RotateSpeedInAir;
-                var targetSpeed = CharacterMoveController.IsGrounded ? CharacterMoveController.WalkSpeed : CharacterMoveController.AirWalkSpeedMax;
+                var rotateSpeed = MoveController.IsGrounded ? RotateSpeedOnGround : RotateSpeedInAir;
+                var targetSpeed = MoveController.IsGrounded ? Module.WalkSpeed : Module.AirWalkSpeedMax;
                 var speedRatio = Mathf.InverseLerp(0, targetSpeed, horizontalVelocity.magnitude);
                 ModelRoot.rotation = Quaternion.RotateTowards(ModelRoot.rotation, targetRotation, rotateSpeed * speedRatio * Time.deltaTime);
             }
@@ -78,7 +83,7 @@ namespace CharacterControls.Movements.Animations
 
         private void UpdateWalkAnimation()
         {
-            var velocity = CharacterMoveController.RelativeVelocityToGround;
+            var velocity = Module.RelativeVelocityToGround;
             var verticalVelocity = Vector3.Project(velocity, ModelRoot.up);
             var horizontalVelocity = velocity - verticalVelocity;
             _smoothedSpeed = Mathf.Lerp(_smoothedSpeed, horizontalVelocity.magnitude, SpeedSmoothing);
@@ -87,7 +92,7 @@ namespace CharacterControls.Movements.Animations
 
         private void UpdateAirAnimation()
         {
-            Animator.SetBool(GroundedAnimatorParameter, CharacterMoveController.IsGrounded);
+            Animator.SetBool(GroundedAnimatorParameter, MoveController.IsGrounded);
         }
 
         private void OnAnimatorIK()

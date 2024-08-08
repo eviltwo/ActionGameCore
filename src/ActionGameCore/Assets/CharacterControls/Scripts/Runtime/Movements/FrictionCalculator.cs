@@ -20,7 +20,7 @@ namespace CharacterControls
             if (velocity.sqrMagnitude < friction * friction)
             {
                 Slipping = false;
-                FrictionForce = velocity * -Strength;
+                FrictionForce = -(velocity * Strength);
             }
             else
             {

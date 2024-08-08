@@ -80,7 +80,7 @@ namespace CharacterControls.Movements.Modules
                 var verticalSpeed = Vector3.Dot(rig.velocity + accVelocity, payload.Root.up);
                 verticalSpeed = Mathf.Min(verticalSpeed, 0);
                 // Weaken jumping force by height.
-                var currentHeight = Vector3.Dot(payload.Rigidbody.position - payload.Controller.LastGroundPosition, payload.Root.up);
+                var currentHeight = Vector3.Dot(payload.Rigidbody.position - payload.Controller.LastGroundHit.point, payload.Root.up);
                 var jumpHeight = GetHeightByJumpSpeed(JumpSpeed, -Physics.gravity.y);
                 var modifiedJumpSpeed = GetJumpSpeedByHeight(jumpHeight - currentHeight, -Physics.gravity.y);
                 modifiedJumpSpeed = Mathf.Min(modifiedJumpSpeed, JumpSpeed);

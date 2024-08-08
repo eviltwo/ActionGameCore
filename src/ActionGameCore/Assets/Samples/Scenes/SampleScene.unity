@@ -137,7 +137,6 @@ GameObject:
   - component: {fileID: 177208278}
   - component: {fileID: 177208277}
   - component: {fileID: 177208276}
-  - component: {fileID: 177208279}
   m_Layer: 6
   m_Name: Player
   m_TagString: Untagged
@@ -157,8 +156,10 @@ Transform:
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children:
-  - {fileID: 1919363447}
   - {fileID: 1314562539}
+  - {fileID: 1424167952}
+  - {fileID: 1946843979}
+  - {fileID: 1919363447}
   m_Father: {fileID: 0}
   m_RootOrder: 2
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
@@ -235,12 +236,6 @@ MonoBehaviour:
   _capsuleCollider: {fileID: 177208274}
   LegStrength: 30
   LegDamper: 40
-  WalkSpeed: 5
-  FrictionStrength: 30
-  StaticFriction: 0.1
-  DynamicFriction: 1
-  AirWalkAcceleration: 2
-  AirWalkSpeedMax: 5
   _drawDebug: 1
 --- !u!114 &177208277
 MonoBehaviour:
@@ -291,25 +286,6 @@ MonoBehaviour:
   m_DefaultActionMap: Player
   m_SplitScreenIndex: -1
   m_Camera: {fileID: 0}
---- !u!114 &177208279
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 177208272}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: a88582a46f078c34abd5557f01a484bf, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  BufferedInputDuration: 0.3
-  CoyoteDuration: 0.1
-  JumpSpeed: 5
-  SkipGroundCheckTime: 0.3
-  OnJump:
-    m_PersistentCalls:
-      m_Calls: []
 --- !u!1 &209071631
 GameObject:
   m_ObjectHideFlags: 0
@@ -1435,11 +1411,6 @@ Transform:
   m_Father: {fileID: 0}
   m_RootOrder: 21
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
---- !u!1 &432768784 stripped
-GameObject:
-  m_CorrespondingSourceObject: {fileID: 919132149155446097, guid: 36078ab0369161e49a29d349ae3e0739, type: 3}
-  m_PrefabInstance: {fileID: 1314562538}
-  m_PrefabAsset: {fileID: 0}
 --- !u!1 &537667168
 GameObject:
   m_ObjectHideFlags: 0
@@ -3658,16 +3629,7 @@ PrefabInstance:
     m_RemovedComponents: []
     m_RemovedGameObjects: []
     m_AddedGameObjects: []
-    m_AddedComponents:
-    - targetCorrespondingSourceObject: {fileID: 919132149155446097, guid: 36078ab0369161e49a29d349ae3e0739, type: 3}
-      insertIndex: -1
-      addedObject: {fileID: 1314562542}
-    - targetCorrespondingSourceObject: {fileID: 919132149155446097, guid: 36078ab0369161e49a29d349ae3e0739, type: 3}
-      insertIndex: -1
-      addedObject: {fileID: 1314562541}
-    - targetCorrespondingSourceObject: {fileID: 919132149155446097, guid: 36078ab0369161e49a29d349ae3e0739, type: 3}
-      insertIndex: -1
-      addedObject: {fileID: 1314562543}
+    m_AddedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: 36078ab0369161e49a29d349ae3e0739, type: 3}
 --- !u!4 &1314562539 stripped
 Transform:
@@ -3679,61 +3641,6 @@ Animator:
   m_CorrespondingSourceObject: {fileID: 5866666021909216657, guid: 36078ab0369161e49a29d349ae3e0739, type: 3}
   m_PrefabInstance: {fileID: 1314562538}
   m_PrefabAsset: {fileID: 0}
---- !u!114 &1314562541
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 432768784}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 1220e0d47e06f8f4ab672412c46646ec, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  Animator: {fileID: 1314562540}
-  JumpModule: {fileID: 177208279}
-  JumpAnimatorParameterTrigger: OnJump
---- !u!114 &1314562542
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 432768784}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 5a07b174fded3d54ea3a2bf1b667f616, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  ModelRoot: {fileID: 1314562539}
-  Animator: {fileID: 1314562540}
-  CharacterMoveController: {fileID: 177208276}
-  RotateSpeedOnGround: 720
-  RotateSpeedInAir: 90
-  SpeedAnimatorParameter: Speed
-  SpeedMultiplier: 1
-  SpeedSmoothing: 0.1
-  GroundedAnimatorParameter: IsGrounded
-  IgnoreCollidersForIK:
-  - {fileID: 177208274}
---- !u!114 &1314562543
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 432768784}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: a2b0160b467414c44af6b0fb95ea9341, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  ModelRoot: {fileID: 1314562539}
-  Animator: {fileID: 1314562540}
-  Module: {fileID: 1919363448}
-  PullUpStartTimeMax: 0.9
-  PullUpState: PullUp
 --- !u!1 &1318817720
 GameObject:
   m_ObjectHideFlags: 0
@@ -4607,6 +4514,81 @@ MeshFilter:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 1415648367}
   m_Mesh: {fileID: 10202, guid: 0000000000000000e000000000000000, type: 0}
+--- !u!1 &1424167951
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 1424167952}
+  - component: {fileID: 1424167953}
+  - component: {fileID: 1424167954}
+  m_Layer: 6
+  m_Name: Walk Module
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!4 &1424167952
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1424167951}
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalPosition: {x: 0, y: 0, z: 0}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_ConstrainProportionsScale: 0
+  m_Children: []
+  m_Father: {fileID: 177208273}
+  m_RootOrder: -1
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!114 &1424167953
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1424167951}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: fb1f6399c9e4d2043b0401123673678b, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  WalkSpeed: 5
+  FrictionStrength: 30
+  StaticFriction: 0.1
+  DynamicFriction: 1
+  AirWalkAcceleration: 2
+  AirWalkSpeedMax: 5
+--- !u!114 &1424167954
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1424167951}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 5a07b174fded3d54ea3a2bf1b667f616, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  ModelRoot: {fileID: 1314562539}
+  Animator: {fileID: 1314562540}
+  MoveController: {fileID: 177208276}
+  Module: {fileID: 1424167953}
+  RotateSpeedOnGround: 720
+  RotateSpeedInAir: 90
+  SpeedAnimatorParameter: Speed
+  SpeedMultiplier: 1
+  SpeedSmoothing: 0.1
+  GroundedAnimatorParameter: IsGrounded
+  IgnoreCollidersForIK:
+  - {fileID: 177208274}
 --- !u!1 &1426999642
 GameObject:
   m_ObjectHideFlags: 0
@@ -10357,8 +10339,9 @@ GameObject:
   m_Component:
   - component: {fileID: 1919363447}
   - component: {fileID: 1919363448}
+  - component: {fileID: 1919363449}
   m_Layer: 0
-  m_Name: AdditionalModules
+  m_Name: Pull Up Module
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -10418,6 +10401,23 @@ MonoBehaviour:
           m_StringArgument: 
           m_BoolArgument: 0
         m_CallState: 2
+--- !u!114 &1919363449
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1919363446}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: a2b0160b467414c44af6b0fb95ea9341, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  ModelRoot: {fileID: 1314562539}
+  Animator: {fileID: 1314562540}
+  Module: {fileID: 1919363448}
+  PullUpStartTimeMax: 0.5
+  PullUpState: PullUp
 --- !u!1 &1926801131
 GameObject:
   m_ObjectHideFlags: 0
@@ -10628,6 +10628,73 @@ Transform:
   m_Father: {fileID: 0}
   m_RootOrder: 12
   m_LocalEulerAnglesHint: {x: -45, y: 0, z: 0}
+--- !u!1 &1946843978
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 1946843979}
+  - component: {fileID: 1946843981}
+  - component: {fileID: 1946843980}
+  m_Layer: 6
+  m_Name: Jump Module
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!4 &1946843979
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1946843978}
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalPosition: {x: 0, y: 0, z: 0}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_ConstrainProportionsScale: 0
+  m_Children: []
+  m_Father: {fileID: 177208273}
+  m_RootOrder: -1
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!114 &1946843980
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1946843978}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 1220e0d47e06f8f4ab672412c46646ec, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  Animator: {fileID: 1314562540}
+  JumpModule: {fileID: 1946843981}
+  JumpAnimatorParameterTrigger: OnJump
+--- !u!114 &1946843981
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1946843978}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: a88582a46f078c34abd5557f01a484bf, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  BufferedInputDuration: 0.3
+  CoyoteDuration: 0.1
+  JumpSpeed: 5
+  SkipGroundCheckTime: 0.3
+  OnJump:
+    m_PersistentCalls:
+      m_Calls: []
 --- !u!1 &1977769827
 GameObject:
   m_ObjectHideFlags: 0

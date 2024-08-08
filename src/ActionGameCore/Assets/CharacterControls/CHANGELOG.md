@@ -3,6 +3,7 @@
 ## [0.11.0] - DEVELOP
 ### Changed
 - Changed the module to inherit from CharacterModuleBase.
+- Changed the movement process to the Module class.
 
 ## [0.10.1] - 2024-08-08
 ### Changed

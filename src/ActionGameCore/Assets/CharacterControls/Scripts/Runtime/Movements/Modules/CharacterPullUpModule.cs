@@ -79,7 +79,12 @@ namespace CharacterControls.Movements.Modules
                 return;
             }
 
-            var velocity = payload.Controller.TargetVelocity;
+            if (!payload.Controller.TryGetModule<CharacterWalkModule>(out var walkModule))
+            {
+                return;
+            }
+
+            var velocity = walkModule.TargetVelocity;
             var verticalVelocity = Vector3.Project(velocity, payload.Root.up);
             var moveDirection = (velocity - verticalVelocity).normalized;
             if (moveDirection.sqrMagnitude == 0f)
