@@ -129,7 +129,7 @@ Transform:
   - {fileID: 5146791148808192392}
   - {fileID: 8511588688698123268}
   m_Father: {fileID: 0}
-  m_RootOrder: 2
+  m_RootOrder: 0
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!54 &3221378127348490039
 Rigidbody:
@@ -300,9 +300,8 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   WalkSpeed: 5
-  FrictionStrength: 30
-  StaticFriction: 0.1
-  DynamicFriction: 1
+  StaticFriction: 0.6
+  DynamicFriction: 0.5
   AirWalkAcceleration: 2
   AirWalkSpeedMax: 5
 --- !u!114 &8879251989308488595

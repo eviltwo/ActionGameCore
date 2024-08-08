@@ -8,8 +8,6 @@ namespace CharacterControls
 
         public Vector3 FrictionForce { get; private set; }
 
-        public float Strength { get; set; } = 1;
-
         public float StaticFriction { get; set; } = 1;
 
         public float DynamicFriction { get; set; } = 1;
@@ -20,12 +18,12 @@ namespace CharacterControls
             if (velocity.sqrMagnitude < friction * friction)
             {
                 Slipping = false;
-                FrictionForce = -(velocity * Strength);
+                FrictionForce = -velocity;
             }
             else
             {
                 Slipping = true;
-                FrictionForce = velocity.normalized * -(friction * Strength);
+                FrictionForce = velocity.normalized * -friction;
             }
         }
     }

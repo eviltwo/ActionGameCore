@@ -9,13 +9,10 @@ namespace CharacterControls.Movements.Modules
         public float WalkSpeed = 5.0f;
 
         [SerializeField]
-        public float FrictionStrength = 30;
+        public float StaticFriction = 0.6f;
 
         [SerializeField]
-        public float StaticFriction = 0.1f;
-
-        [SerializeField]
-        public float DynamicFriction = 1.0f;
+        public float DynamicFriction = 0.5f;
 
         [SerializeField]
         public float AirWalkAcceleration = 2.0f;
@@ -77,9 +74,8 @@ namespace CharacterControls.Movements.Modules
             diffVelocity -= Vector3.Project(diffVelocity, hit.normal); // Remove velocity on normal
             _frictionCalculator.StaticFriction = StaticFriction;
             _frictionCalculator.DynamicFriction = DynamicFriction;
-            _frictionCalculator.Strength = FrictionStrength;
             _frictionCalculator.Calculate(-diffVelocity);
-            var addVelocity = _frictionCalculator.FrictionForce;
+            var addVelocity = _frictionCalculator.FrictionForce / Time.fixedDeltaTime;
             rb.AddForce(addVelocity, ForceMode.Acceleration);
         }
 
