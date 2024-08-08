@@ -1,6 +1,6 @@
 {
     "name": "CharacterControls.Movements",
-    "rootNamespace": "",
+    "rootNamespace": "CharacterControls.Movements",
     "references": [],
     "includePlatforms": [],
     "excludePlatforms": [],
