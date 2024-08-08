@@ -5,7 +5,7 @@ using UnityEngine.Events;
 
 namespace CharacterControls.Movements.Modules
 {
-    public class CharacterPullUpModule : MonoBehaviour, ICharacterMoveModule
+    public class CharacterPullUpModule : CharacterModuleBase
     {
         [SerializeField]
         public float CheckDistanceStart = 0.3f;
@@ -17,13 +17,19 @@ namespace CharacterControls.Movements.Modules
         public int CheckCount = 4;
 
         [SerializeField]
-        public float MaxHeight = 1.5f;
+        public float HeightMin = 0.5f;
 
         [SerializeField]
-        public float MinHeight = 0.5f;
+        public float HeightMax = 1.5f;
 
         [SerializeField]
         public float SlopeLimit = 45.0f;
+
+        [SerializeField]
+        public bool RequireAirborneState = true;
+
+        [SerializeField]
+        public bool RequireFallingState = true;
 
         [SerializeField]
         public float StopMoveDurationMin = 0.1f;
@@ -46,21 +52,12 @@ namespace CharacterControls.Movements.Modules
         private List<IDisposable> _stopRequests = new List<IDisposable>();
         private float _stopElapsedTime;
         public float StopDuration { get; private set; }
-        private List<CharacterJumpModule> _jumpModuleBuffer = new List<CharacterJumpModule>();
 
         public Vector3 LastMoveDirection { get; private set; }
 
-        private void Start()
+        protected override void OnDestroy()
         {
-            var characterMoveController = GetComponentInParent<CharacterMoveController>();
-            characterMoveController?.RegisterModule(this);
-        }
-
-        private void OnDestroy()
-        {
-            var characterMoveController = GetComponentInParent<CharacterMoveController>();
-            characterMoveController?.UnregisterModule(this);
-
+            base.OnDestroy();
             foreach (var request in _stopRequests)
             {
                 request?.Dispose();
@@ -68,7 +65,7 @@ namespace CharacterControls.Movements.Modules
             _stopRequests.Clear();
         }
 
-        public void FixedUpdateModule(in CharacterMoveModulePayload payload)
+        public override void FixedUpdateModule(in CharacterMoveModulePayload payload)
         {
             _stopElapsedTime += Time.deltaTime;
             if (_stopRequests.Count > 0 && _stopElapsedTime > StopDuration)
@@ -80,14 +77,30 @@ namespace CharacterControls.Movements.Modules
                 _stopRequests.Clear();
             }
 
-            if (payload.Controller.IsGrounded
-                || Vector3.Dot(payload.Rigidbody.velocity, payload.Root.up) > 0f
-                || _stopRequests.Count > 0)
+            // Check stop requests
+            if (_stopRequests.Count > 0)
             {
                 return;
             }
 
-            var velocity = payload.Controller.TargetVelocity;
+            // Check airborne state
+            if (RequireAirborneState && payload.Controller.IsGrounded)
+            {
+                return;
+            }
+
+            // Check falling state
+            if (RequireFallingState && Vector3.Dot(payload.Rigidbody.velocity, payload.Root.up) > 0f)
+            {
+                return;
+            }
+
+            if (!payload.Controller.TryGetModule<CharacterWalkModule>(out var walkModule))
+            {
+                return;
+            }
+
+            var velocity = walkModule.TargetVelocity;
             var verticalVelocity = Vector3.Project(velocity, payload.Root.up);
             var moveDirection = (velocity - verticalVelocity).normalized;
             if (moveDirection.sqrMagnitude == 0f)
@@ -95,9 +108,9 @@ namespace CharacterControls.Movements.Modules
                 return;
             }
 
-            var ray = new Ray(payload.Root.position + moveDirection * CheckDistanceStart + payload.Root.up * MaxHeight, -payload.Root.up);
+            var ray = new Ray(payload.Root.position + moveDirection * CheckDistanceStart + payload.Root.up * HeightMax, -payload.Root.up);
             var lineLength = CheckDistanceEnd - CheckDistanceStart;
-            var verticalDistance = MaxHeight - MinHeight;
+            var verticalDistance = HeightMax - HeightMin;
             if (CharacterMoveUtility.CheckLineGroundSafety(ray, verticalDistance, moveDirection, lineLength, CheckCount, SlopeLimit, out var hit, payload.Controller.GroundLayer)
                 && !Physics.CheckCapsule(hit.point + payload.Root.up * SafetyCapsuleStart, hit.point + payload.Root.up * SafetyCapsuleEnd, SafetyCapsuleRadius, payload.Controller.GroundLayer))
             {
@@ -111,14 +124,13 @@ namespace CharacterControls.Movements.Modules
                 {
                     rig.AddForce(hit.rigidbody.velocity, ForceMode.VelocityChange);
                 }
-                _stopRequests.Add(payload.Controller.RequestStopMove());
-                payload.Controller.GetModules(_jumpModuleBuffer);
-                for (int j = 0; j < _jumpModuleBuffer.Count; j++)
+                _stopRequests.Add(walkModule.RequestStopMove());
+                if (payload.Controller.TryGetModule<CharacterJumpModule>(out var jumpModule))
                 {
-                    _stopRequests.Add(_jumpModuleBuffer[j].RequestStopJump());
+                    _stopRequests.Add(jumpModule.RequestStopJump());
                 }
                 LastMoveDirection = moveDirection;
-                var heightRatio = Mathf.InverseLerp(MinHeight, MaxHeight, grabHeight);
+                var heightRatio = Mathf.InverseLerp(HeightMin, HeightMax, grabHeight);
                 StopDuration = Mathf.Lerp(StopMoveDurationMin, StopMoveDurationMax, heightRatio);
                 _stopElapsedTime = 0f;
                 OnPullUp?.Invoke();

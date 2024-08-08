@@ -5,7 +5,7 @@ using UnityEngine;
 
 namespace CharacterControls.Movements
 {
-    public class CharacterMoveController : MonoBehaviour, IInputReceiver<Vector2>
+    public class CharacterMoveController : MonoBehaviour
     {
         [SerializeField]
         public Rigidbody Rigidbody = null;
@@ -29,45 +29,20 @@ namespace CharacterControls.Movements
         private CapsuleCollider _capsuleCollider = null;
 
         [SerializeField]
-        public float LegStrength = 20.0f;
+        public float LegStrength = 60.0f;
 
         [SerializeField]
-        public float LegDamper = 40.0f;
-
-        [SerializeField]
-        public float WalkSpeed = 5.0f;
-
-        [SerializeField]
-        public float FrictionStrength = 30;
-
-        [SerializeField]
-        public float StaticFriction = 0.1f;
-
-        [SerializeField]
-        public float DynamicFriction = 1.0f;
-
-        [SerializeField]
-        public float AirWalkAcceleration = 2.0f;
-
-        [SerializeField]
-        public float AirWalkSpeedMax = 5.0f;
+        public float LegDamper = 50.0f;
 
         [SerializeField]
         private bool _drawDebug = false;
 
-        private Vector2 _moveInput;
-        private FrictionCalculator _frictionCalculator = new FrictionCalculator();
         private ModuleRequestManager _skipGroundCheckRequestManager = new ModuleRequestManager();
-        private ModuleRequestManager _stopMoveRequestManager = new ModuleRequestManager();
-        private List<ICharacterMoveModule> _modules = new List<ICharacterMoveModule>();
+        private List<ICharacterModule> _modules = new List<ICharacterModule>();
 
         public bool IsGrounded { get; private set; }
 
-        public Vector3 LastGroundPosition { get; private set; }
-
-        public Vector3 TargetVelocity { get; private set; }
-
-        public Vector3 RelativeVelocityToGround { get; private set; }
+        public RaycastHit LastGroundHit { get; private set; }
 
         private void Reset()
         {
@@ -87,19 +62,6 @@ namespace CharacterControls.Movements
                 var newCenter = center + new Vector3(0, stepHeight / 2, 0);
                 _capsuleCollider.height = newHeight;
                 _capsuleCollider.center = newCenter;
-            }
-        }
-
-        public void OnReceiveInput(string key, Vector2 value)
-        {
-            if (key == "Move")
-            {
-                if (value.sqrMagnitude > 1)
-                {
-                    value.Normalize();
-                }
-
-                _moveInput = value;
             }
         }
 
@@ -127,18 +89,8 @@ namespace CharacterControls.Movements
 
             if (IsGrounded)
             {
-                LastGroundPosition = hit.point;
+                LastGroundHit = hit;
                 CalculateLegSpring(hit, Margin);
-            }
-
-            var input = _stopMoveRequestManager.HasRequest() ? Vector2.zero : _moveInput;
-            if (IsGrounded)
-            {
-                Walk(input, hit);
-            }
-            else
-            {
-                WalkAir(input);
             }
 
             var modulePayload = new CharacterMoveModulePayload(transform, Rigidbody, this);
@@ -167,67 +119,41 @@ namespace CharacterControls.Movements
             Rigidbody.AddForce(damperForce, ForceMode.Acceleration);
         }
 
-        private void Walk(Vector2 input, RaycastHit hit)
-        {
-            var forward = CharacterMoveUtility.GetForwardMovementDirectionFromCamera(transform, CameraTransform);
-            var right = Vector3.Cross(transform.up, forward);
-            var inputBaseVelocity = (forward * input.y + right * input.x) * WalkSpeed;
-            TargetVelocity = Quaternion.FromToRotation(transform.up, hit.normal) * inputBaseVelocity;
-            RelativeVelocityToGround = Rigidbody.velocity;
-            if (hit.rigidbody != null)
-            {
-                RelativeVelocityToGround -= hit.rigidbody.GetPointVelocity(hit.point);
-            }
-            var diffVelocity = TargetVelocity - RelativeVelocityToGround;
-            diffVelocity -= Vector3.Project(diffVelocity, transform.up); // Remove velocity on normal
-            _frictionCalculator.StaticFriction = StaticFriction;
-            _frictionCalculator.DynamicFriction = DynamicFriction;
-            _frictionCalculator.Strength = FrictionStrength;
-            _frictionCalculator.Calculate(-diffVelocity);
-            var addVelocity = _frictionCalculator.FrictionForce;
-            Rigidbody.AddForce(addVelocity, ForceMode.Acceleration);
-        }
-
-        private void WalkAir(Vector2 input)
-        {
-            var forward = CharacterMoveUtility.GetForwardMovementDirectionFromCamera(transform, CameraTransform);
-            var right = Vector3.Cross(transform.up, forward);
-            TargetVelocity = (forward * input.y + right * input.x) * AirWalkSpeedMax;
-            RelativeVelocityToGround = Rigidbody.velocity;
-            var diffVelocity = TargetVelocity - RelativeVelocityToGround;
-            diffVelocity.y = 0;
-            var addVelocity = diffVelocity * AirWalkAcceleration;
-
-            // If the maximum input is made in the same direction as the movement direction, don't brake the velocity.
-            var targetDirectionAddSpeed = Vector3.Dot(addVelocity, TargetVelocity.normalized);
-            const float fullInputThreshold = 0.75f;
-            if (input.sqrMagnitude > fullInputThreshold * fullInputThreshold && targetDirectionAddSpeed < 0)
-            {
-                var moveDirectionMatchRatio = 1 - Mathf.Clamp01(Vector3.Angle(TargetVelocity, RelativeVelocityToGround) / 180);
-                addVelocity -= TargetVelocity.normalized * (targetDirectionAddSpeed * moveDirectionMatchRatio);
-            }
-
-            // Speed limit
-            if (addVelocity.sqrMagnitude > AirWalkSpeedMax * AirWalkSpeedMax)
-            {
-                addVelocity = addVelocity.normalized * AirWalkSpeedMax;
-            }
-
-            Rigidbody.AddForce(addVelocity, ForceMode.Acceleration);
-        }
-
-        public void RegisterModule(ICharacterMoveModule module)
+        public void RegisterModule(ICharacterModule module)
         {
             _modules.Add(module);
         }
 
-        public void UnregisterModule(ICharacterMoveModule module)
+        public void UnregisterModule(ICharacterModule module)
         {
             _modules.Remove(module);
         }
 
+        public T GetModule<T>()
+            where T : ICharacterModule
+        {
+            TryGetModule<T>(out var result);
+            return result;
+        }
+
+        public bool TryGetModule<T>(out T result)
+            where T : ICharacterModule
+        {
+            var count = _modules.Count;
+            for (var i = 0; i < count; i++)
+            {
+                if (_modules[i] is T module)
+                {
+                    result = module;
+                    return true;
+                }
+            }
+            result = default;
+            return false;
+        }
+
         public void GetModules<T>(List<T> results)
-            where T : ICharacterMoveModule
+            where T : ICharacterModule
         {
             results.Clear();
             var count = _modules.Count;
@@ -243,11 +169,6 @@ namespace CharacterControls.Movements
         public IDisposable RequestSkipGroundCheck()
         {
             return _skipGroundCheckRequestManager.GetRequest();
-        }
-
-        public IDisposable RequestStopMove()
-        {
-            return _stopMoveRequestManager.GetRequest();
         }
     }
 }

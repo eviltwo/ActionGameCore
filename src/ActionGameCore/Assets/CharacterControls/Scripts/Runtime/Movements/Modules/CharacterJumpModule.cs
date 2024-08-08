@@ -4,7 +4,7 @@ using UnityEngine.Events;
 
 namespace CharacterControls.Movements.Modules
 {
-    public class CharacterJumpModule : MonoBehaviour, ICharacterMoveModule, IInputReceiver<float>
+    public class CharacterJumpModule : CharacterModuleBase, IInputReceiver<float>
     {
         [SerializeField]
         public float BufferedInputDuration = 0.1f;
@@ -31,17 +31,9 @@ namespace CharacterControls.Movements.Modules
         public bool IsJumping { get; private set; }
         public bool IsCoyoteTime => !IsJumping && _groundElapsedTime < CoyoteDuration;
 
-        private void Start()
+        protected override void OnDestroy()
         {
-            var characterMoveController = GetComponentInParent<CharacterMoveController>();
-            characterMoveController?.RegisterModule(this);
-        }
-
-        private void OnDestroy()
-        {
-            var characterMoveController = GetComponentInParent<CharacterMoveController>();
-            characterMoveController?.UnregisterModule(this);
-
+            base.OnDestroy();
             _skipGroundCheckRequest?.Dispose();
             _skipGroundCheckRequest = null;
         }
@@ -58,7 +50,7 @@ namespace CharacterControls.Movements.Modules
             }
         }
 
-        public void FixedUpdateModule(in CharacterMoveModulePayload payload)
+        public override void FixedUpdateModule(in CharacterMoveModulePayload payload)
         {
             _groundElapsedTime += Time.fixedDeltaTime;
             if (payload.Controller.IsGrounded)
@@ -86,9 +78,8 @@ namespace CharacterControls.Movements.Modules
                 // Get current velocity to cancel it out.
                 var accVelocity = rig.GetAccumulatedForce() / rig.mass * Time.fixedDeltaTime;
                 var verticalSpeed = Vector3.Dot(rig.velocity + accVelocity, payload.Root.up);
-                verticalSpeed = Mathf.Min(verticalSpeed, 0);
                 // Weaken jumping force by height.
-                var currentHeight = Vector3.Dot(payload.Rigidbody.position - payload.Controller.LastGroundPosition, payload.Root.up);
+                var currentHeight = Vector3.Dot(rig.position - payload.Controller.LastGroundHit.point, payload.Root.up);
                 var jumpHeight = GetHeightByJumpSpeed(JumpSpeed, -Physics.gravity.y);
                 var modifiedJumpSpeed = GetJumpSpeedByHeight(jumpHeight - currentHeight, -Physics.gravity.y);
                 modifiedJumpSpeed = Mathf.Min(modifiedJumpSpeed, JumpSpeed);
