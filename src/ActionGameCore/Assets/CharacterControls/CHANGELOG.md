@@ -6,6 +6,7 @@
 - Changed the movement process to the Module class.
 ### Added
 - Added a parameter to make the Pull-up module operable on the ground.
+- Added dash.
 ### Fixed
 - Fixed a bug where it would hop on slopes.
 - Fixed friction calculation.

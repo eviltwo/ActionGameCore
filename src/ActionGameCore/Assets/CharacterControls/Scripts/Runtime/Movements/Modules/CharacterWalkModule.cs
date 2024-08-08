@@ -3,10 +3,16 @@ using UnityEngine;
 
 namespace CharacterControls.Movements.Modules
 {
-    public class CharacterWalkModule : CharacterModuleBase, IInputReceiver<Vector2>
+    public class CharacterWalkModule : CharacterModuleBase, IInputReceiver<Vector2>, IInputReceiver<float>
     {
         [SerializeField]
         public float WalkSpeed = 5.0f;
+
+        [SerializeField]
+        public bool EnableDash = true;
+
+        [SerializeField]
+        public float DashSpeed = 10.0f;
 
         [SerializeField]
         public float SpeedReductionBySlope = 1.0f;
@@ -24,6 +30,7 @@ namespace CharacterControls.Movements.Modules
         public float AirWalkSpeedMax = 5.0f;
 
         private Vector2 _moveInput;
+        private bool _dashInput;
         private FrictionCalculator _frictionCalculator = new FrictionCalculator();
         private ModuleRequestManager _stopMoveRequestManager = new ModuleRequestManager();
 
@@ -41,6 +48,14 @@ namespace CharacterControls.Movements.Modules
                 }
 
                 _moveInput = value;
+            }
+        }
+
+        public void OnReceiveInput(string key, float value)
+        {
+            if (key == "Dash")
+            {
+                _dashInput = value > 0;
             }
         }
 
@@ -65,7 +80,8 @@ namespace CharacterControls.Movements.Modules
 
             var forward = CharacterMoveUtility.GetForwardMovementDirectionFromCamera(root, payload.Controller.CameraTransform);
             var right = Vector3.Cross(root.up, forward);
-            var inputBaseVelocity = (forward * input.y + right * input.x) * WalkSpeed;
+            var speed = _dashInput && EnableDash ? DashSpeed : WalkSpeed;
+            var inputBaseVelocity = (forward * input.y + right * input.x) * speed;
             TargetVelocity = Quaternion.FromToRotation(root.up, hit.normal) * inputBaseVelocity;
             if (TargetVelocity.y > 0)
             {
