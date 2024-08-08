@@ -17,6 +17,9 @@ namespace CharacterControls.Movements.Animations
         [SerializeField]
         public string PullUpAnimatorParameterTrigger = "OnPullUp";
 
+        [SerializeField]
+        public int AnimatorRefreshCount = 3;
+
         private void Reset()
         {
             Animator = GetComponentInChildren<Animator>();
@@ -44,7 +47,10 @@ namespace CharacterControls.Movements.Animations
         {
             ModelRoot.rotation = Quaternion.LookRotation(Module.LastMoveDirection, ModelRoot.up);
             Animator.SetTrigger(PullUpAnimatorParameterTrigger);
-            Animator.Update(0);
+            for (int i = 0; i < AnimatorRefreshCount; i++)
+            {
+                Animator.Update(0);
+            }
         }
     }
 }
