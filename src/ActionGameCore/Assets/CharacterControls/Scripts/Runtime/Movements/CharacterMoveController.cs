@@ -50,9 +50,6 @@ namespace CharacterControls.Movements
         public float AirWalkAcceleration = 2.0f;
 
         [SerializeField]
-        public float AirWalkAccelerationMax = 5.0f;
-
-        [SerializeField]
         public float AirWalkSpeedMax = 5.0f;
 
         [SerializeField]
@@ -211,9 +208,9 @@ namespace CharacterControls.Movements
             }
 
             // Speed limit
-            if (addVelocity.sqrMagnitude > AirWalkAccelerationMax * AirWalkAccelerationMax)
+            if (addVelocity.sqrMagnitude > AirWalkSpeedMax * AirWalkSpeedMax)
             {
-                addVelocity = addVelocity.normalized * AirWalkAccelerationMax;
+                addVelocity = addVelocity.normalized * AirWalkSpeedMax;
             }
 
             Rigidbody.AddForce(addVelocity, ForceMode.Acceleration);
