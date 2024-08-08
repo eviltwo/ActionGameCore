@@ -48,13 +48,13 @@ MonoBehaviour:
   CheckDistanceStart: 0.3
   CheckDistanceEnd: 0.6
   CheckCount: 8
-  MaxHeight: 1.6
-  MinHeight: 1
+  HeightMin: 0.5
+  HeightMax: 1.5
   SlopeLimit: 45
   RequireAirborneState: 1
   RequireFallingState: 1
-  StopMoveDurationMin: 0.1
-  StopMoveDurationMax: 0.5
+  StopMoveDurationMin: 0.5
+  StopMoveDurationMax: 1
   SafetyCapsuleStart: 0.5
   SafetyCapsuleEnd: 1.5
   SafetyCapsuleRadius: 0.1
@@ -165,7 +165,7 @@ CapsuleCollider:
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 2626126708513704040}
-  m_Material: {fileID: 13400000, guid: 0a0edcf9f20919d48989299794e3621c, type: 2}
+  m_Material: {fileID: 0}
   m_IncludeLayers:
     serializedVersion: 2
     m_Bits: 0
@@ -300,6 +300,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   WalkSpeed: 5
+  SpeedReductionBySlope: 0.5
   StaticFriction: 0.6
   DynamicFriction: 0.5
   AirWalkAcceleration: 2

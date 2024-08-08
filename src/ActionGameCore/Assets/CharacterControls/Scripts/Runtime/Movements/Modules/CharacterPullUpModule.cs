@@ -17,10 +17,10 @@ namespace CharacterControls.Movements.Modules
         public int CheckCount = 4;
 
         [SerializeField]
-        public float MaxHeight = 1.5f;
+        public float HeightMin = 0.5f;
 
         [SerializeField]
-        public float MinHeight = 0.5f;
+        public float HeightMax = 1.5f;
 
         [SerializeField]
         public float SlopeLimit = 45.0f;
@@ -109,9 +109,9 @@ namespace CharacterControls.Movements.Modules
                 return;
             }
 
-            var ray = new Ray(payload.Root.position + moveDirection * CheckDistanceStart + payload.Root.up * MaxHeight, -payload.Root.up);
+            var ray = new Ray(payload.Root.position + moveDirection * CheckDistanceStart + payload.Root.up * HeightMax, -payload.Root.up);
             var lineLength = CheckDistanceEnd - CheckDistanceStart;
-            var verticalDistance = MaxHeight - MinHeight;
+            var verticalDistance = HeightMax - HeightMin;
             if (CharacterMoveUtility.CheckLineGroundSafety(ray, verticalDistance, moveDirection, lineLength, CheckCount, SlopeLimit, out var hit, payload.Controller.GroundLayer)
                 && !Physics.CheckCapsule(hit.point + payload.Root.up * SafetyCapsuleStart, hit.point + payload.Root.up * SafetyCapsuleEnd, SafetyCapsuleRadius, payload.Controller.GroundLayer))
             {
@@ -132,7 +132,7 @@ namespace CharacterControls.Movements.Modules
                     _stopRequests.Add(_jumpModuleBuffer[j].RequestStopJump());
                 }
                 LastMoveDirection = moveDirection;
-                var heightRatio = Mathf.InverseLerp(MinHeight, MaxHeight, grabHeight);
+                var heightRatio = Mathf.InverseLerp(HeightMin, HeightMax, grabHeight);
                 StopDuration = Mathf.Lerp(StopMoveDurationMin, StopMoveDurationMax, heightRatio);
                 _stopElapsedTime = 0f;
                 OnPullUp?.Invoke();

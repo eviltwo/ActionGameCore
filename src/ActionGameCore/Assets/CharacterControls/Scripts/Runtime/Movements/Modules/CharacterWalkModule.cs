@@ -9,6 +9,9 @@ namespace CharacterControls.Movements.Modules
         public float WalkSpeed = 5.0f;
 
         [SerializeField]
+        public float SpeedReductionBySlope = 1.0f;
+
+        [SerializeField]
         public float StaticFriction = 0.6f;
 
         [SerializeField]
@@ -64,6 +67,12 @@ namespace CharacterControls.Movements.Modules
             var right = Vector3.Cross(root.up, forward);
             var inputBaseVelocity = (forward * input.y + right * input.x) * WalkSpeed;
             TargetVelocity = Quaternion.FromToRotation(root.up, hit.normal) * inputBaseVelocity;
+            if (TargetVelocity.y > 0)
+            {
+                var targetAngle = Vector3.Angle(inputBaseVelocity, TargetVelocity);
+                var speedReductionRatio = Mathf.Sin(targetAngle * Mathf.Deg2Rad);
+                TargetVelocity -= TargetVelocity * (speedReductionRatio * SpeedReductionBySlope);
+            }
             Debug.DrawRay(hit.point, TargetVelocity, Color.red);
             RelativeVelocityToGround = rb.velocity;
             if (hit.rigidbody != null)
