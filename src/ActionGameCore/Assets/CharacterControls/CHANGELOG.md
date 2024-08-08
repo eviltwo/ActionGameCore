@@ -10,6 +10,7 @@
 ### Fixed
 - Fixed a bug where it would hop on slopes.
 - Fixed friction calculation.
+- Fixed max velocity in air.
 
 ## [0.10.1] - 2024-08-08
 ### Changed

@@ -126,12 +126,6 @@ namespace CharacterControls.Movements.Modules
                 addVelocity -= TargetVelocity.normalized * (targetDirectionAddSpeed * moveDirectionMatchRatio);
             }
 
-            // Speed limit
-            if (addVelocity.sqrMagnitude > AirWalkSpeedMax * AirWalkSpeedMax)
-            {
-                addVelocity = addVelocity.normalized * AirWalkSpeedMax;
-            }
-
             rb.AddForce(addVelocity, ForceMode.Acceleration);
         }
 
