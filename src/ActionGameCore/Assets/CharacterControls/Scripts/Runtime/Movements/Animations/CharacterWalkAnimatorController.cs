@@ -4,7 +4,7 @@ using UnityEngine;
 
 namespace CharacterControls.Movements.Animations
 {
-    public class CharacterMoveAnimatorController : MonoBehaviour
+    public class CharacterWalkAnimatorController : MonoBehaviour
     {
         [SerializeField]
         public Transform ModelRoot = null;
