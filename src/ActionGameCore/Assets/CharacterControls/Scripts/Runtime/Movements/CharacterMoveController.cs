@@ -29,10 +29,10 @@ namespace CharacterControls.Movements
         private CapsuleCollider _capsuleCollider = null;
 
         [SerializeField]
-        public float LegStrength = 20.0f;
+        public float LegStrength = 60.0f;
 
         [SerializeField]
-        public float LegDamper = 40.0f;
+        public float LegDamper = 50.0f;
 
         [SerializeField]
         private bool _drawDebug = false;

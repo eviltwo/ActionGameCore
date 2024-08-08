@@ -234,8 +234,8 @@ MonoBehaviour:
   SlopeLimit: 45
   _autoResizeCapsuleCollider: 1
   _capsuleCollider: {fileID: 177208274}
-  LegStrength: 30
-  LegDamper: 40
+  LegStrength: 60
+  LegDamper: 50
   _drawDebug: 1
 --- !u!114 &177208277
 MonoBehaviour:
