@@ -47,8 +47,8 @@ namespace CharacterControls.Movements.Animations
         {
             ModelRoot.rotation = Quaternion.LookRotation(Module.LastMoveDirection, ModelRoot.up);
             var durationRatio = Mathf.InverseLerp(Module.StopMoveDurationMin, Module.StopMoveDurationMax, Module.StopDuration);
-            var motionTime = Mathf.Lerp(0f, PullUpStartTimeMax, durationRatio);
-            Animator.Play(PullUpState, 0, motionTime);
+            var startTime = Mathf.Lerp(0f, PullUpStartTimeMax, 1f - durationRatio);
+            Animator.Play(PullUpState, 0, startTime);
         }
     }
 }
