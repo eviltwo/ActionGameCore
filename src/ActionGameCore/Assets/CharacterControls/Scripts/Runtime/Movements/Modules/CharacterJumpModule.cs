@@ -83,16 +83,34 @@ namespace CharacterControls.Movements.Modules
             if (virtualGrounded && _jumpInput && Time.time - _jumpInputTime < BufferedInputDuration)
             {
                 var rig = payload.Controller.Rigidbody;
+                // Get current velocity to cancel it out.
                 var accVelocity = rig.GetAccumulatedForce() / rig.mass * Time.fixedDeltaTime;
                 var verticalSpeed = Vector3.Dot(rig.velocity + accVelocity, payload.Root.up);
                 verticalSpeed = Mathf.Min(verticalSpeed, 0);
-                rig.AddForce(payload.Root.up * (JumpSpeed - verticalSpeed), ForceMode.VelocityChange);
+                // Weaken jumping force by height.
+                var currentHeight = Vector3.Dot(payload.Rigidbody.position - payload.Controller.LastGroundPosition, payload.Root.up);
+                var jumpHeight = GetHeightByJumpSpeed(JumpSpeed, -Physics.gravity.y);
+                var modifiedJumpSpeed = GetJumpSpeedByHeight(jumpHeight - currentHeight, -Physics.gravity.y);
+                modifiedJumpSpeed = Mathf.Min(modifiedJumpSpeed, JumpSpeed);
+                Debug.Log(modifiedJumpSpeed);
+                // Apply jump force
+                rig.AddForce(payload.Root.up * (modifiedJumpSpeed - verticalSpeed), ForceMode.VelocityChange);
                 _jumpElapsedTime = 0;
                 IsJumping = true;
                 _groundElapsedTime = float.MaxValue;
                 _skipGroundCheckRequest = payload.Controller.RequestSkipGroundCheck();
                 OnJump?.Invoke();
             }
+        }
+
+        private static float GetHeightByJumpSpeed(float jumpSpeed, float gravity)
+        {
+            return jumpSpeed * jumpSpeed / (2 * gravity);
+        }
+
+        private static float GetJumpSpeedByHeight(float height, float gravity)
+        {
+            return Mathf.Sqrt(2 * gravity * height);
         }
 
         public IDisposable RequestStopJump()

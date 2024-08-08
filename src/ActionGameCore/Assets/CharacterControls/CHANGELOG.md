@@ -9,6 +9,7 @@
 - Changed wall check for pull up movement.
 ### Fixed
 - Fixed spring and damper issues.
+- Fixed issue where the height was too high when jumping before landing on the ground.
 
 ## [0.10.0] - 2024-08-04
 ### Changed

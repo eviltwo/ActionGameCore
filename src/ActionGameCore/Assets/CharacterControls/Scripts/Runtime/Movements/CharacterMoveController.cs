@@ -66,6 +66,8 @@ namespace CharacterControls.Movements
 
         public bool IsGrounded { get; private set; }
 
+        public Vector3 LastGroundPosition { get; private set; }
+
         public Vector3 TargetVelocity { get; private set; }
 
         public Vector3 RelativeVelocityToGround { get; private set; }
@@ -128,6 +130,7 @@ namespace CharacterControls.Movements
 
             if (IsGrounded)
             {
+                LastGroundPosition = hit.point;
                 CalculateLegSpring(hit, Margin);
             }
 
