@@ -74,17 +74,22 @@ namespace CharacterControls.Movements.Modules
             var virtualGrounded = _groundElapsedTime < CoyoteDuration;
             if (virtualGrounded && _jumpInput && Time.time - _jumpInputTime < BufferedInputDuration)
             {
-                var rig = payload.Controller.Rigidbody;
+                var rb = payload.Controller.Rigidbody;
+                // Fit ground
+                if (rb.position.y < payload.Controller.LastGroundHit.point.y)
+                {
+                    rb.MovePosition(new Vector3(rb.position.x, payload.Controller.LastGroundHit.point.y, rb.position.z));
+                }
                 // Get current velocity to cancel it out.
-                var accVelocity = rig.GetAccumulatedForce() / rig.mass * Time.fixedDeltaTime;
-                var verticalSpeed = Vector3.Dot(rig.velocity + accVelocity, payload.Root.up);
+                var accVelocity = rb.GetAccumulatedForce() / rb.mass * Time.fixedDeltaTime;
+                var verticalSpeed = Vector3.Dot(rb.velocity + accVelocity, payload.Root.up);
                 // Weaken jumping force by height.
-                var currentHeight = Vector3.Dot(rig.position - payload.Controller.LastGroundHit.point, payload.Root.up);
+                var currentHeight = Vector3.Dot(rb.position - payload.Controller.LastGroundHit.point, payload.Root.up);
                 var jumpHeight = GetHeightByJumpSpeed(JumpSpeed, -Physics.gravity.y);
                 var modifiedJumpSpeed = GetJumpSpeedByHeight(jumpHeight - currentHeight, -Physics.gravity.y);
                 modifiedJumpSpeed = Mathf.Min(modifiedJumpSpeed, JumpSpeed);
                 // Apply jump force
-                rig.AddForce(payload.Root.up * (modifiedJumpSpeed - verticalSpeed), ForceMode.VelocityChange);
+                rb.AddForce(payload.Root.up * (modifiedJumpSpeed - verticalSpeed), ForceMode.VelocityChange);
                 _jumpElapsedTime = 0;
                 IsJumping = true;
                 _groundElapsedTime = float.MaxValue;

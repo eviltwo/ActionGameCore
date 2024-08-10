@@ -11,6 +11,7 @@
 - Fixed a bug where it would hop on slopes.
 - Fixed friction calculation.
 - Fixed max velocity in air.
+- Fixed the issue where the jump height was slightly low.
 
 ## [0.10.1] - 2024-08-08
 ### Changed
