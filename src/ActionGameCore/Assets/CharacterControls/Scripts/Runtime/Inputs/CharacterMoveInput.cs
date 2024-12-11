@@ -45,12 +45,18 @@ namespace CharacterControls.Inputs
         private void Start()
         {
             CollectReceivers();
-            PlayerInput.onActionTriggered += OnActionTriggerd;
+            if (PlayerInput != null)
+            {
+                PlayerInput.onActionTriggered += OnActionTriggerd;
+            }
         }
 
         private void OnDestroy()
         {
-            PlayerInput.onActionTriggered -= OnActionTriggerd;
+            if (PlayerInput != null)
+            {
+                PlayerInput.onActionTriggered -= OnActionTriggerd;
+            }
         }
 
         public void CollectReceivers()
