@@ -31,3 +31,9 @@ https://github.com/eviltwo/ActionGameCore.git?path=src/ActionGameCore/Assets/Cam
 ```
 https://github.com/eviltwo/ActionGameCore.git?path=src/ActionGameCore/Assets/Interactions
 ```
+
+# 活動支援
+私は個人開発者なので、金銭的に支援して頂けるととても助かります！
+- [Asset Store](https://assetstore.unity.com/publishers/12117)
+- [Steam](https://store.steampowered.com/curator/45066588)
+- [GitHub Sponsors](https://github.com/sponsors/eviltwo)
