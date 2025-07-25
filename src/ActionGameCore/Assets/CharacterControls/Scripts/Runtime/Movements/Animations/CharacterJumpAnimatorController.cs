@@ -22,7 +22,7 @@ namespace CharacterControls.Movements.Animations
 
         private void Start()
         {
-            if (JumpModule != null)
+            if (!JumpModule)
             {
                 JumpModule.OnJump.AddListener(OnJump);
             }
@@ -30,7 +30,7 @@ namespace CharacterControls.Movements.Animations
 
         private void OnDestroy()
         {
-            if (JumpModule != null)
+            if (!JumpModule)
             {
                 JumpModule.OnJump.RemoveListener(OnJump);
             }
@@ -38,6 +38,11 @@ namespace CharacterControls.Movements.Animations
 
         private void OnJump()
         {
+            if (!Animator)
+            {
+                return;
+            }
+
             Animator.SetTrigger(JumpAnimatorParameterTrigger);
         }
     }

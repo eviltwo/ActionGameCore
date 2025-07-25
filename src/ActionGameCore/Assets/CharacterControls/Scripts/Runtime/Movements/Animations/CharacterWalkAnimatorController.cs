@@ -56,7 +56,7 @@ namespace CharacterControls.Movements.Animations
 
         private void Update()
         {
-            if (MoveController == null || Module == null)
+            if (!ModelRoot || !Animator || !MoveController || !Module)
             {
                 return;
             }

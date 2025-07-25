@@ -45,6 +45,11 @@ namespace CharacterControls.Movements.Animations
 
         private void OnPullUp()
         {
+            if (!ModelRoot || !Animator || !Module)
+            {
+                return;
+            }
+            
             ModelRoot.rotation = Quaternion.LookRotation(Module.LastMoveDirection, ModelRoot.up);
             var durationRatio = Mathf.InverseLerp(Module.StopMoveDurationMin, Module.StopMoveDurationMax, Module.StopDuration);
             var startTime = Mathf.Lerp(0f, PullUpStartTimeMax, 1f - durationRatio);
