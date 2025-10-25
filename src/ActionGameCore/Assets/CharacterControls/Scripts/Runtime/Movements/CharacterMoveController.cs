@@ -22,6 +22,15 @@ namespace CharacterControls.Movements
         [SerializeField]
         public float SlopeLimit = 45.0f;
 
+        public enum GroundCheckMethods
+        {
+            Raycast,
+            SphereCast,
+        }
+        
+        [SerializeField]
+        public GroundCheckMethods GroundCheckMethod = GroundCheckMethods.Raycast;
+
         [SerializeField]
         private bool _autoResizeCapsuleCollider = true;
 
@@ -37,8 +46,8 @@ namespace CharacterControls.Movements
         [SerializeField]
         private bool _drawDebug = false;
 
-        private ModuleRequestManager _skipGroundCheckRequestManager = new ModuleRequestManager();
-        private List<ICharacterModule> _modules = new List<ICharacterModule>();
+        private readonly ModuleRequestManager _skipGroundCheckRequestManager = new ();
+        private readonly List<ICharacterModule> _modules = new();
 
         public bool IsGrounded { get; private set; }
 
@@ -76,21 +85,17 @@ namespace CharacterControls.Movements
             {
                 return;
             }
-
-            const int CheckCount = 8;
-            const float Radius = 0.1f;
-            const float Margin = 0.1f;
-            RaycastHit hit = default;
-            var ray = new Ray(transform.position + transform.up * (StepHeightMax + Margin), -transform.up);
-            var distance = StepHeightMax * 2 + Margin;
-            IsGrounded = !_skipGroundCheckRequestManager.HasRequest()
-                && CharacterMoveUtility.CheckCircleGroundSafety(ray, distance, Radius, CheckCount, SlopeLimit, out hit, GroundLayer)
-                && hit.distance < StepHeightMax * 2 + Margin;
-
-            if (IsGrounded)
+            
+            IsGrounded = false;
+            if (!_skipGroundCheckRequestManager.HasRequest())
             {
-                LastGroundHit = hit;
-                CalculateLegSpring(hit, Margin);
+                const float Margin = 0.1f;
+                if (CheckGround(out var hit, Margin))
+                {
+                    IsGrounded = true;
+                    LastGroundHit = hit;
+                    CalculateLegSpring(hit, Margin);
+                }
             }
 
             var modulePayload = new CharacterMoveModulePayload(transform, Rigidbody, this);
@@ -98,6 +103,28 @@ namespace CharacterControls.Movements
             for (var i = 0; i < count; i++)
             {
                 _modules[i].FixedUpdateModule(modulePayload);
+            }
+        }
+
+        private bool CheckGround(out RaycastHit hit, float margin)
+        {
+            const float Radius = 0.1f;
+            var ray = new Ray(transform.position + transform.up * (StepHeightMax + margin), -transform.up);
+            switch (GroundCheckMethod)
+            {
+                case GroundCheckMethods.Raycast:
+                    const int CheckCount = 8;
+                    var rayDistance = StepHeightMax * 2 + margin;
+                    return CharacterMoveUtility.CheckCircleGroundSafety(ray, rayDistance, Radius, CheckCount, SlopeLimit, out hit, GroundLayer)
+                        && hit.distance < rayDistance;
+                case GroundCheckMethods.SphereCast:
+                    var sphereDistance = StepHeightMax * 2 + margin - Radius;
+                    var isHit = CharacterMoveUtility.CheckSphereGroundSafety(ray, sphereDistance, Radius, SlopeLimit, out hit, GroundLayer)
+                        && hit.distance < sphereDistance;
+                    hit.distance += isHit ? Radius : 0;
+                    return isHit;
+                default:
+                    throw new ArgumentOutOfRangeException();
             }
         }
 
@@ -115,7 +142,7 @@ namespace CharacterControls.Movements
             {
                 currentVelocity -= hit.rigidbody.GetPointVelocity(hit.point);
             }
-            var damperForce = Vector3.Project(currentVelocity, hit.normal) * -LegDamper * (1f - springRatio);
+            var damperForce = Vector3.Project(currentVelocity, hit.normal) * (-LegDamper * (1f - springRatio));
             Rigidbody.AddForce(damperForce, ForceMode.Acceleration);
         }
 

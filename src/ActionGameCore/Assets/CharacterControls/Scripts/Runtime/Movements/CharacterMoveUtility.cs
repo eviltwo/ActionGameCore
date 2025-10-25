@@ -120,6 +120,19 @@ namespace CharacterControls.Movements
             return isValidGround;
         }
 
+        public static bool CheckSphereGroundSafety(Ray ray, float rayDistance, float radius, float slopeLimit, out RaycastHit hit, LayerMask layerMask)
+        {
+            var circleRay = new Ray(ray.origin, ray.direction);
+            var isHit = Physics.SphereCast(circleRay, radius, out hit, rayDistance, layerMask);
+            if (!isHit)
+            {
+                hit = default;
+                return false;
+            }
+
+            return Vector3.Angle(hit.normal, Vector3.up) < slopeLimit;
+        }
+
         public static Vector3 GetForwardMovementDirectionFromCamera(Transform self, Transform cam)
         {
             if (cam == null)
