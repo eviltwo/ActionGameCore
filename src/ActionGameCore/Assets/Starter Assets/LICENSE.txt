@@ -1,6 +1,0 @@
-Starter Assets: Character Controllers | URP
-Unity Technologies
-https://assetstore.unity.com/packages/essentials/starter-assets-character-controllers-urp-267961
-
-Asset is under Unity Companion License.
-https://unity.com/ja/legal/licenses/unity-companion-license
