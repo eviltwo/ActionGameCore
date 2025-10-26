@@ -25,13 +25,13 @@ Transform:
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 741635884183753772}
+  serializedVersion: 2
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
   m_LocalPosition: {x: 0, y: 0, z: 0}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children: []
   m_Father: {fileID: 1427394776400432944}
-  m_RootOrder: -1
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!114 &1532393912243988744
 MonoBehaviour:
@@ -119,6 +119,7 @@ Transform:
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 2626126708513704040}
+  serializedVersion: 2
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
   m_LocalPosition: {x: 0, y: 0, z: 0}
   m_LocalScale: {x: 1, y: 1, z: 1}
@@ -129,7 +130,6 @@ Transform:
   - {fileID: 5146791148808192392}
   - {fileID: 8511588688698123268}
   m_Father: {fileID: 0}
-  m_RootOrder: 0
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!54 &3221378127348490039
 Rigidbody:
@@ -224,14 +224,6 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   PlayerInput: {fileID: 3815651625149874726}
-  _floatActionKeyMaps:
-  - CharacterActionKey: Jump
-    InputActionReference: {fileID: 1120369429361536294, guid: d050cea4568e2be47bc9a4f2c136ccf9, type: 3}
-  - CharacterActionKey: Dash
-    InputActionReference: {fileID: 589714816466819599, guid: d050cea4568e2be47bc9a4f2c136ccf9, type: 3}
-  _vector2ActionKeyMaps:
-  - CharacterActionKey: Move
-    InputActionReference: {fileID: -1680190386980627800, guid: d050cea4568e2be47bc9a4f2c136ccf9, type: 3}
 --- !u!114 &5389334460692901752
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -251,6 +243,7 @@ MonoBehaviour:
     m_Bits: 1
   StepHeightMax: 0.25
   SlopeLimit: 45
+  GroundCheckMethod: 0
   _autoResizeCapsuleCollider: 1
   _capsuleCollider: {fileID: 6803279103036362952}
   LegStrength: 60
@@ -281,13 +274,13 @@ Transform:
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 4951034915949213685}
+  serializedVersion: 2
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
   m_LocalPosition: {x: 0, y: 0, z: 0}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children: []
   m_Father: {fileID: 1427394776400432944}
-  m_RootOrder: -1
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!114 &8936305643848804616
 MonoBehaviour:
@@ -301,7 +294,11 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: fb1f6399c9e4d2043b0401123673678b, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  InputActionMoveName: Move
+  InputActionDashName: Dash
   WalkSpeed: 5
+  EnableDash: 1
+  DashSpeed: 10
   SpeedReductionBySlope: 0.25
   StaticFriction: 0.6
   DynamicFriction: 0.5
@@ -356,13 +353,13 @@ Transform:
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 5963967903534077456}
+  serializedVersion: 2
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
   m_LocalPosition: {x: 0, y: 0, z: 0}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children: []
   m_Father: {fileID: 1427394776400432944}
-  m_RootOrder: -1
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!114 &3557634690080740378
 MonoBehaviour:
@@ -376,6 +373,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: a88582a46f078c34abd5557f01a484bf, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  InputActionName: Jump
   BufferedInputDuration: 0.3
   CoyoteDuration: 0.1
   JumpSpeed: 5

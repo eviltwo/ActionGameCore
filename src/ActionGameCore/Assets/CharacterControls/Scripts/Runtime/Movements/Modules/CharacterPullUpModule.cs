@@ -1,5 +1,6 @@
 using System;
 using System.Collections.Generic;
+using CharacterControls.Inputs;
 using UnityEngine;
 using UnityEngine.Events;
 
@@ -7,46 +8,32 @@ namespace CharacterControls.Movements.Modules
 {
     public class CharacterPullUpModule : CharacterModuleBase
     {
-        [SerializeField]
         public float CheckDistanceStart = 0.3f;
 
-        [SerializeField]
         public float CheckDistanceEnd = 0.5f;
 
-        [SerializeField]
         public int CheckCount = 4;
 
-        [SerializeField]
         public float HeightMin = 0.5f;
 
-        [SerializeField]
         public float HeightMax = 1.5f;
 
-        [SerializeField]
         public float SlopeLimit = 45.0f;
 
-        [SerializeField]
         public bool RequireAirborneState = true;
 
-        [SerializeField]
         public bool RequireFallingState = true;
 
-        [SerializeField]
         public float StopMoveDurationMin = 0.1f;
 
-        [SerializeField]
         public float StopMoveDurationMax = 0.5f;
 
-        [SerializeField]
         public float SafetyCapsuleStart = 0.5f;
 
-        [SerializeField]
         public float SafetyCapsuleEnd = 1.5f;
 
-        [SerializeField]
         public float SafetyCapsuleRadius = 0.2f;
 
-        [SerializeField]
         public UnityEvent OnPullUp = default;
 
         private List<IDisposable> _stopRequests = new List<IDisposable>();
@@ -55,14 +42,19 @@ namespace CharacterControls.Movements.Modules
 
         public Vector3 LastMoveDirection { get; private set; }
 
-        protected override void OnDestroy()
+        protected override void OnDisable()
         {
-            base.OnDestroy();
+            base.OnDisable();
             foreach (var request in _stopRequests)
             {
                 request?.Dispose();
             }
+
             _stopRequests.Clear();
+        }
+
+        public override void OnReceiveInput(InputContext context)
+        {
         }
 
         public override void FixedUpdateModule(in CharacterMoveModulePayload payload)
@@ -74,6 +66,7 @@ namespace CharacterControls.Movements.Modules
                 {
                     request?.Dispose();
                 }
+
                 _stopRequests.Clear();
             }
 
@@ -124,11 +117,13 @@ namespace CharacterControls.Movements.Modules
                 {
                     rig.AddForce(hit.rigidbody.velocity, ForceMode.VelocityChange);
                 }
+
                 _stopRequests.Add(walkModule.RequestStopMove());
                 if (payload.Controller.TryGetModule<CharacterJumpModule>(out var jumpModule))
                 {
                     _stopRequests.Add(jumpModule.RequestStopJump());
                 }
+
                 LastMoveDirection = moveDirection;
                 var heightRatio = Mathf.InverseLerp(HeightMin, HeightMax, grabHeight);
                 StopDuration = Mathf.Lerp(StopMoveDurationMin, StopMoveDurationMax, heightRatio);

@@ -1,47 +1,45 @@
 using System;
+using CharacterControls.Inputs;
 using UnityEngine;
 
 namespace CharacterControls.Movements.Modules
 {
-    public class CharacterWalkModule : CharacterModuleBase, IInputReceiver<Vector2>, IInputReceiver<float>
+    public class CharacterWalkModule : CharacterModuleBase
     {
-        [SerializeField]
+        public string InputActionMoveName = "Move";
+
+        public string InputActionDashName = "Dash";
+
         public float WalkSpeed = 5.0f;
 
-        [SerializeField]
         public bool EnableDash = true;
 
-        [SerializeField]
         public float DashSpeed = 10.0f;
 
-        [SerializeField]
         public float SpeedReductionBySlope = 1.0f;
 
-        [SerializeField]
         public float StaticFriction = 0.6f;
 
-        [SerializeField]
         public float DynamicFriction = 0.5f;
 
-        [SerializeField]
         public float AirWalkAcceleration = 2.0f;
 
-        [SerializeField]
         public float AirWalkSpeedMax = 5.0f;
 
         private Vector2 _moveInput;
         private bool _dashInput;
-        private FrictionCalculator _frictionCalculator = new FrictionCalculator();
-        private ModuleRequestManager _stopMoveRequestManager = new ModuleRequestManager();
+        private readonly FrictionCalculator _frictionCalculator = new();
+        private readonly ModuleRequestManager _stopMoveRequestManager = new();
 
         public Vector3 TargetVelocity { get; private set; }
 
         public Vector3 RelativeVelocityToGround { get; private set; }
 
-        public void OnReceiveInput(string key, Vector2 value)
+        public override void OnReceiveInput(InputContext context)
         {
-            if (key == "Move")
+            if (context.actionName == InputActionMoveName)
             {
+                var value = context.ReadValue<Vector2>();
                 if (value.sqrMagnitude > 1)
                 {
                     value.Normalize();
@@ -49,13 +47,10 @@ namespace CharacterControls.Movements.Modules
 
                 _moveInput = value;
             }
-        }
 
-        public void OnReceiveInput(string key, float value)
-        {
-            if (key == "Dash")
+            if (context.actionName == InputActionDashName)
             {
-                _dashInput = value > 0;
+                _dashInput = context.ReadValue<float>() > 0;
             }
         }
 
@@ -89,11 +84,13 @@ namespace CharacterControls.Movements.Modules
                 var speedReductionRatio = Mathf.Sin(targetAngle * Mathf.Deg2Rad);
                 TargetVelocity -= TargetVelocity * (speedReductionRatio * SpeedReductionBySlope);
             }
+
             RelativeVelocityToGround = rb.velocity;
             if (hit.rigidbody != null)
             {
                 RelativeVelocityToGround -= hit.rigidbody.GetPointVelocity(hit.point);
             }
+
             var diffVelocity = TargetVelocity - RelativeVelocityToGround;
             diffVelocity -= Vector3.Project(diffVelocity, hit.normal); // Remove velocity on normal
             _frictionCalculator.StaticFriction = StaticFriction;
@@ -107,7 +104,6 @@ namespace CharacterControls.Movements.Modules
         {
             var root = payload.Root;
             var rb = payload.Rigidbody;
-            var hit = payload.Controller.LastGroundHit;
 
             var forward = CharacterMoveUtility.GetForwardMovementDirectionFromCamera(root, payload.Controller.CameraTransform);
             var right = Vector3.Cross(root.up, forward);

@@ -1,24 +1,22 @@
 using System;
+using CharacterControls.Inputs;
 using UnityEngine;
 using UnityEngine.Events;
 
 namespace CharacterControls.Movements.Modules
 {
-    public class CharacterJumpModule : CharacterModuleBase, IInputReceiver<float>
+    public class CharacterJumpModule : CharacterModuleBase
     {
-        [SerializeField]
+        public string InputActionName = "Jump";
+
         public float BufferedInputDuration = 0.1f;
 
-        [SerializeField]
         public float CoyoteDuration = 0.1f;
 
-        [SerializeField]
         public float JumpSpeed = 5.0f;
 
-        [SerializeField]
         public float SkipGroundCheckTime = 0.1f;
 
-        [SerializeField]
         public UnityEvent OnJump = default;
 
         private bool _jumpInput;
@@ -31,18 +29,18 @@ namespace CharacterControls.Movements.Modules
         public bool IsJumping { get; private set; }
         public bool IsCoyoteTime => !IsJumping && _groundElapsedTime < CoyoteDuration;
 
-        protected override void OnDestroy()
+        protected override void OnDisable()
         {
-            base.OnDestroy();
+            base.OnDisable();
             _skipGroundCheckRequest?.Dispose();
             _skipGroundCheckRequest = null;
         }
 
-        public void OnReceiveInput(string key, float value)
+        public override void OnReceiveInput(InputContext context)
         {
-            if (key == "Jump")
+            if (context.actionName == InputActionName)
             {
-                _jumpInput = value > 0;
+                _jumpInput = context.ReadValue<float>() > 0;
                 if (_jumpInput)
                 {
                     _jumpInputTime = Time.time;
@@ -80,6 +78,7 @@ namespace CharacterControls.Movements.Modules
                 {
                     rb.MovePosition(new Vector3(rb.position.x, payload.Controller.LastGroundHit.point.y, rb.position.z));
                 }
+
                 // Get current velocity to cancel it out.
                 var accVelocity = rb.GetAccumulatedForce() / rb.mass * Time.fixedDeltaTime;
                 var verticalSpeed = Vector3.Dot(rb.velocity + accVelocity, payload.Root.up);
