@@ -1,5 +1,15 @@
 # Changelog
 
+## [Development]
+
+### Changed
+
+- Rename CharacterMoveInput to CharacterMoveInputRelay.
+
+### Added
+
+- Added bot input samples.
+
 ## [0.12.0]
 
 ### Changed
