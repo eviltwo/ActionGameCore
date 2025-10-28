@@ -10,6 +10,10 @@
 
 - Added bot input samples.
 
+### Modified
+
+- Merge CharacterControls assembly definitions.
+
 ## [0.12.0]
 
 ### Changed

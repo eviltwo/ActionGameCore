@@ -3,7 +3,7 @@
     "rootNamespace": "ActionGameCoreSamples",
     "references": [
         "GUID:75469ad4d38634e559750d17036d5f7c",
-        "GUID:f78a8ec813c5f8145ab10c7862a1d174"
+        "GUID:8fa2d1eb73721e84ca1168bbd3959272"
     ],
     "includePlatforms": [],
     "excludePlatforms": [],
