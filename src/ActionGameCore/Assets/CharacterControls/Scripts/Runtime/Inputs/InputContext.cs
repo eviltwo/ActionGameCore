@@ -32,7 +32,7 @@ namespace CharacterControls.Inputs
             _value = value;
         }
 
-        public string actionName => _hasCallbackContext ? _callbackContext.action.name : null;
+        public string actionName => _hasCallbackContext ? _callbackContext.action.name : _actionName;
 
         public InputActionPhase phase => _hasCallbackContext ? _callbackContext.phase : _phase;
 

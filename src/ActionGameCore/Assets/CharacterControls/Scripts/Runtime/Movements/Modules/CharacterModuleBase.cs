@@ -5,14 +5,14 @@ namespace CharacterControls.Movements.Modules
 {
     public abstract class CharacterModuleBase : MonoBehaviour, ICharacterModule, IInputReceiver
     {
-        private CharacterMoveInput _characterInput;
+        private CharacterMoveInputRelay _characterInputRelay;
 
         protected virtual void OnEnable()
         {
-            _characterInput = GetComponentInParent<CharacterMoveInput>();
-            if (_characterInput != null)
+            _characterInputRelay = GetComponentInParent<CharacterMoveInputRelay>();
+            if (_characterInputRelay != null)
             {
-                _characterInput.RegisterReceiver(this);
+                _characterInputRelay.RegisterReceiver(this);
             }
 
             var characterMoveController = GetComponentInParent<CharacterMoveController>();
@@ -21,10 +21,10 @@ namespace CharacterControls.Movements.Modules
 
         protected virtual void OnDisable()
         {
-            if (_characterInput != null)
+            if (_characterInputRelay != null)
             {
-                _characterInput.UnregisterReceiver(this);
-                _characterInput = null;
+                _characterInputRelay.UnregisterReceiver(this);
+                _characterInputRelay = null;
             }
 
             var characterMoveController = GetComponentInParent<CharacterMoveController>();
