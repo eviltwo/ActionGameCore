@@ -9635,7 +9635,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: e220ffeca52586447b11ed05406f1520, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  moveInputRelay: {fileID: 477161337}
+  _moveInputRelay: {fileID: 477161337}
   _chaseTarget: {fileID: 177208273}
   _chaseDistance: 5
   _jumpInterval: 3
