@@ -5,12 +5,12 @@ using UnityEngine.InputSystem;
 
 namespace CharacterControls.Inputs
 {
-    public class CharacterMoveInput : MonoBehaviour
+    public class CharacterMoveInputRelay : MonoBehaviour
     {
         [SerializeField]
         public PlayerInput PlayerInput = null;
 
-        private readonly List<IInputReceiver> _receivers = new List<IInputReceiver>();
+        private readonly List<IInputReceiver> _receivers = new();
 
         private void OnEnable()
         {
@@ -36,6 +36,14 @@ namespace CharacterControls.Inputs
         public void UnregisterReceiver(IInputReceiver receiver)
         {
             _receivers.Remove(receiver);
+        }
+
+        public void SendInput(InputContext context)
+        {
+            foreach (var receiver in _receivers)
+            {
+                receiver.OnReceiveInput(context);
+            }
         }
 
         private void OnActionTriggerd(InputAction.CallbackContext context)
