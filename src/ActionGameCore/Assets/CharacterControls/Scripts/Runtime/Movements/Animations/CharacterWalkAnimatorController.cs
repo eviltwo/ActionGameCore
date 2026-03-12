@@ -6,45 +6,38 @@ namespace CharacterControls.Movements.Animations
 {
     public class CharacterWalkAnimatorController : MonoBehaviour
     {
-        [SerializeField]
         public Transform ModelRoot = null;
 
-        [SerializeField]
         public Animator Animator = null;
 
-        [SerializeField]
         public CharacterMoveController MoveController = null;
 
-        [SerializeField]
         public CharacterWalkModule Module;
 
-        [SerializeField]
         public float RotateSpeedOnGround = 360.0f;
 
-        [SerializeField]
         public float RotateSpeedInAir = 45.0f;
 
-        [SerializeField]
+        public float RotateSpeedWhileIdle = 0.0f;
+
         public string SpeedAnimatorParameter = "Speed";
 
-        [SerializeField]
         public float SpeedMultiplier = 1.0f;
 
-        [SerializeField]
         public float SpeedSmoothing = 0.1f;
 
-        [SerializeField]
         public string GroundedAnimatorParameter = "IsGrounded";
 
         private float _smoothedSpeed;
 
-        [SerializeField]
-        public List<Collider> IgnoreCollidersForIK = default;
+        public List<Collider> IgnoreCollidersForIK = null;
 
         private Vector3 _leftDiffPos;
         private Quaternion _leftDiffRot;
         private Vector3 _rightDiffPos;
         private Quaternion _rightDiffRot;
+
+        private Quaternion _targetRotation = Quaternion.identity;
 
         private void Reset()
         {
@@ -73,12 +66,13 @@ namespace CharacterControls.Movements.Animations
             var horizontalVelocity = velocity - verticalVelocity;
             if (horizontalVelocity.sqrMagnitude > 0.01f)
             {
-                var targetRotation = Quaternion.LookRotation(horizontalVelocity, ModelRoot.up);
-                var rotateSpeed = MoveController.IsGrounded ? RotateSpeedOnGround : RotateSpeedInAir;
-                var targetSpeed = MoveController.IsGrounded ? Module.WalkSpeed : Module.AirWalkSpeedMax;
-                var speedRatio = Mathf.InverseLerp(0, targetSpeed, horizontalVelocity.magnitude);
-                ModelRoot.rotation = Quaternion.RotateTowards(ModelRoot.rotation, targetRotation, rotateSpeed * speedRatio * Time.deltaTime);
+                _targetRotation = Quaternion.LookRotation(horizontalVelocity, ModelRoot.up);
             }
+
+            var rotateSpeedMax = MoveController.IsGrounded ? RotateSpeedOnGround : RotateSpeedInAir;
+            var targetSpeed = MoveController.IsGrounded ? Module.WalkSpeed : Module.AirWalkSpeedMax;
+            var rotateSpeed = Mathf.Lerp(RotateSpeedWhileIdle, rotateSpeedMax, Mathf.InverseLerp(0, targetSpeed, horizontalVelocity.magnitude));
+            ModelRoot.rotation = Quaternion.RotateTowards(ModelRoot.rotation, _targetRotation, rotateSpeed * Time.deltaTime);
         }
 
         private void UpdateWalkAnimation()
